@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f0e9dc;
+}
+::-webkit-scrollbar-thumb {
+  background: #c59b27;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+/* Gold Gradient Text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #fef4cf 0%, #d4af37 50%, #aa821d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-text-pure {
+  color: #c59b27;
+}
+
+/* Luxury Light Card (Reference UI) */
+.ivory-card {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 24px -4px rgba(43, 32, 23, 0.06);
+  transition: all 0.3s ease;
+}
+
+.ivory-card:hover {
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: 0 14px 32px -4px rgba(43, 32, 23, 0.12);
+}
+
+/* Ornament Line */
+.ornament-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.ornament-line::before,
+.ornament-line::after {
+  content: "";
+  height: 1px;
+  width: 3.5rem;
+  background: linear-gradient(90deg, transparent, rgba(197, 155, 39, 0.6), transparent);
+}

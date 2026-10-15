@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fae892"/>
+      <stop offset="35%" stop-color="#dfb743"/>
+      <stop offset="70%" stop-color="#c59828"/>
+      <stop offset="100%" stop-color="#936d14"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+
+  <!-- K&T Only (No Circle) -->
+  <g filter="url(#shadow)" text-anchor="middle" dominant-baseline="central">
+    <text x="32" y="34" font-family="'Cormorant Garamond', 'Cinzel', 'Playfair Display', Georgia, serif" font-size="32" font-weight="800" fill="url(#gold)" letter-spacing="0.5">K&amp;T</text>
+  </g>
+</svg>
