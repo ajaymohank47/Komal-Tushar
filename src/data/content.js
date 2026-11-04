@@ -2,7 +2,7 @@
 // Anyone can edit this file to update names, stories, dates, venues, photos, and family details.
 
 // Real local images — imported so Vite bundles them correctly
-import heroImg from '../assets/images/hero.jpeg';
+import heroImg from '../assets/images/hero.png';
 import akshatatImg from '../assets/images/family/Akshatat.jpg';
 import geetaImg from '../assets/images/family/geeta.jpg';
 import sarveshImg from '../assets/images/family/sarvesh.jpg';

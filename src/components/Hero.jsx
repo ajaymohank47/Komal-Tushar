@@ -74,7 +74,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden">
       {/* Background photo */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-no-repeat bg-center md:bg-[center_22%]"
         style={{ backgroundImage: `url(${hero.backgroundImage})` }}
       >
         {/* Soft golden overlay for warmth */}
