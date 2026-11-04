@@ -50,7 +50,7 @@ export default function Hero() {
       'DTSTART:20261213T043000Z', 'DTEND:20261213T173000Z',
       'SUMMARY:Wedding of Komal & Tushar',
       'DESCRIPTION:Together with their families, Komal & Tushar joyfully invite you to witness their union in love and celebration.',
-      'LOCATION:Swaraj Sanskrutik Bhavan, New Delhi, India', 'STATUS:CONFIRMED',
+      'LOCATION:Swaraj Sanskrutik Bhavan, Satara - Koregaon Rd, Sahakar Nagar, Sangam Mahuli, Maharashtra 415004', 'STATUS:CONFIRMED',
       'END:VEVENT', 'END:VCALENDAR'
     ].join('\r\n');
 

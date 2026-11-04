@@ -10,6 +10,25 @@ import sayaliImg from '../assets/images/family/sayali.jpg';
 import shashikantImg from '../assets/images/family/shashikant.jpg';
 import sushmaImg from '../assets/images/family/sushma.jpg';
 import tejasImg from '../assets/images/family/tejas.jpg';
+import dayanandImg from '../assets/images/family/dayanand.svg';
+
+// Story Images (1 to 5) — Replace these files in src/assets/images/story/ or update paths
+import storyImg1 from '../assets/images/story/story-1.svg';
+import storyImg2 from '../assets/images/story/story-2.svg';
+import storyImg3 from '../assets/images/story/story-3.svg';
+import storyImg4 from '../assets/images/story/story-4.svg';
+import storyImg5 from '../assets/images/story/story-5.svg';
+
+// Gallery Images (1 to 9) — Replace these files in src/assets/images/gallery/ or update paths
+import galleryImg1 from '../assets/images/gallery/gallery-1.svg';
+import galleryImg2 from '../assets/images/gallery/gallery-2.svg';
+import galleryImg3 from '../assets/images/gallery/gallery-3.svg';
+import galleryImg4 from '../assets/images/gallery/gallery-4.svg';
+import galleryImg5 from '../assets/images/gallery/gallery-5.svg';
+import galleryImg6 from '../assets/images/gallery/gallery-6.svg';
+import galleryImg7 from '../assets/images/gallery/gallery-7.svg';
+import galleryImg8 from '../assets/images/gallery/gallery-8.svg';
+import galleryImg9 from '../assets/images/gallery/gallery-9.svg';
 
 export const weddingContent = {
   // Global & Couple Details
@@ -24,7 +43,7 @@ export const weddingContent = {
     },
     weddingDate: "13 · December · 2026",
     weddingDateISO: "2026-12-13T10:00:00+05:30",
-    location: "New Delhi, India",
+    location: "Satara, Maharashtra",
     themeColor: "#000000",
     dividerOrnament: "✦ ✦ ✦",
     singleOrnament: "✦",
@@ -37,7 +56,6 @@ export const weddingContent = {
     { label: "Gallery", href: "#gallery" },
     { label: "Venue", href: "#venue" },
     { label: "RSVP", href: "#rsvp" },
-    { label: "Registry", href: "#registry" },
   ],
 
   // Footer Navigation Links
@@ -49,8 +67,6 @@ export const weddingContent = {
     { label: "Venue", href: "#venue" },
     { label: "RSVP", href: "#rsvp" },
     { label: "Gifts", href: "#gifts" },
-    { label: "Registry", href: "#registry" },
-    { label: "Guest Book", href: "#guestbook" },
   ],
 
   // 1. Hero Section
@@ -84,31 +100,31 @@ export const weddingContent = {
         year: "2020",
         title: "First Meeting",
         text: "A mutual friend's get-together. One glance across the room, one smile — and the universe quietly rearranged itself.",
-        image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80"
+        image: storyImg1
       },
       {
         year: "2021",
         title: "First Date",
         text: "A quiet café, chai that went cold because we couldn't stop talking. Hours felt like minutes.",
-        image: "https://images.unsplash.com/photo-1517256673644-36ad11246d21?auto=format&fit=crop&w=800&q=80"
+        image: storyImg2
       },
       {
         year: "2024",
         title: "The Proposal",
         text: "Tushar planned it perfectly — fairy lights, her favourite flowers, and a question she'd been hoping to hear. She said yes before he could finish.",
-        image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80"
+        image: storyImg3
       },
       {
         year: "2025",
         title: "Engagement",
         text: "Surrounded by family, love, and laughter — we made our promise official and celebrated the start of forever.",
-        image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80"
+        image: storyImg4
       },
       {
         year: "2026",
         title: "Wedding Day",
         text: "December 13, 2026 — the day we say our vows and begin the most beautiful chapter. And you're invited to every moment.",
-        image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80"
+        image: storyImg5
       }
     ]
   },
@@ -121,7 +137,7 @@ export const weddingContent = {
     groomFamily: {
       title: "Groom's Family",
       members: [
-        { name: "Dayanand Pawar", relation: "Father", photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80" },
+        { name: "Dayanand Pawar", relation: "Father", photo: dayanandImg },
         { name: "Geeta Pawar", relation: "Mother", photo: geetaImg },
         { name: "Tejas Pawar", relation: "Brother", photo: tejasImg },
         { name: "Sayali Jadhav-Pawar", relation: "Sister-in-law", photo: sayaliImg }
@@ -151,9 +167,9 @@ export const weddingContent = {
         title: "Haldi",
         date: "December 12, 2026",
         time: "10:00 AM – 2:00 PM",
-        venue: "Mehendi Lawn, The Grand",
+        venue: "Mehendi Lawn, Swaraj Sanskrutik Bhavan",
         dressCode: "Yellow / Bright Ethnic",
-        mapUrl: "https://maps.google.com/?q=The+Grand+New+Delhi"
+        mapUrl: "https://maps.app.goo.gl/gKarbXyyFeRvChTm8"
       },
       {
         id: "wedding",
@@ -161,9 +177,9 @@ export const weddingContent = {
         title: "Wedding Ceremony",
         date: "December 13, 2026",
         time: "10:00 AM – 1:00 PM",
-        venue: "Grand Ballroom, The Grand",
+        venue: "Main Mandap, Swaraj Sanskrutik Bhavan",
         dressCode: "Traditional Ethnic",
-        mapUrl: "https://maps.google.com/?q=The+Grand+New+Delhi"
+        mapUrl: "https://maps.app.goo.gl/gKarbXyyFeRvChTm8"
       },
       {
         id: "reception",
@@ -171,9 +187,9 @@ export const weddingContent = {
         title: "Reception",
         date: "December 13, 2026",
         time: "7:00 PM – 11:00 PM",
-        venue: "Crystal Hall, The Grand",
+        venue: "Grand Hall, Swaraj Sanskrutik Bhavan",
         dressCode: "Formal / Cocktail",
-        mapUrl: "https://maps.google.com/?q=The+Grand+New+Delhi"
+        mapUrl: "https://maps.app.goo.gl/gKarbXyyFeRvChTm8"
       }
     ]
   },
@@ -190,64 +206,64 @@ export const weddingContent = {
         id: "gal-1",
         category: "prewedding",
         title: "Sunset Serenade",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 1",
+        url: galleryImg1
       },
       {
         id: "gal-2",
         category: "engagement",
         title: "The Ring Exchange",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 2",
+        url: galleryImg2
       },
       {
         id: "gal-3",
         category: "prewedding",
         title: "Stolen Whispers",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 3",
+        url: galleryImg3
       },
       {
         id: "gal-4",
         category: "travel",
         title: "Udaipur Lakes",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 4",
+        url: galleryImg4
       },
       {
         id: "gal-5",
         category: "family",
         title: "Family Celebrations",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 5",
+        url: galleryImg5
       },
       {
         id: "gal-6",
         category: "engagement",
         title: "Laughter & Lights",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 6",
+        url: galleryImg6
       },
       {
         id: "gal-7",
         category: "travel",
         title: "Mountain Getaway",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 7",
+        url: galleryImg7
       },
       {
         id: "gal-8",
         category: "prewedding",
         title: "Royal Palace Walk",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 8",
+        url: galleryImg8
       },
       {
         id: "gal-9",
         category: "family",
         title: "Blessings & Joy",
-        alt: "Komal & Tushar",
-        url: "https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1200&q=80"
+        alt: "Photo 9",
+        url: galleryImg9
       }
     ]
   },
@@ -259,10 +275,10 @@ export const weddingContent = {
     heading: "The Venue",
     divider: "✦",
     name: "SWARAJ SANSKRUTIK BHAVAN",
-    url: "https://www.swarajbhavan.com/",
-    address: "Swaraj Sanskrutik Bhavan, Cultural Complex, New Delhi, India",
-    directionsUrl: "https://maps.google.com/?q=SWARAJ+SANSKRUTIK+BHAVAN+New+Delhi",
-    embedMapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112061.09262729792!2d77.10000000000002!3d28.6139391!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b923791f%3A0xf6a693c4e3089ef0!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+    url: "https://maps.app.goo.gl/gKarbXyyFeRvChTm8",
+    address: "Satara - Koregaon Rd, Sahakar Nagar, Sangam Mahuli, Maharashtra 415004",
+    directionsUrl: "https://maps.app.goo.gl/gKarbXyyFeRvChTm8",
+    embedMapUrl: "https://maps.google.com/maps?q=Swaraj+Sanskrutik+Bhavan,+Satara+-+Koregaon+Rd,+Sahakar+Nagar,+Sangam+Mahuli,+Maharashtra+415004&t=&z=15&ie=UTF8&iwloc=&output=embed"
   },
 
   // 8. RSVP Section (id: rsvp)
@@ -319,7 +335,7 @@ export const weddingContent = {
   // 12. Footer
   footer: {
     coupleNames: "Komal & Tushar",
-    datePlace: "13 December 2026 · New Delhi, India",
+    datePlace: "13 December 2026 · Satara, Maharashtra",
     loveNotice: "Made with ♥ for Komal & Tushar · 2026"
   }
 };

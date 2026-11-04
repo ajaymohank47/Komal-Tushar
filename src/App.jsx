@@ -11,8 +11,6 @@ import Gallery from './components/Gallery';
 import Venue from './components/Venue';
 import RSVP from './components/RSVP';
 import WeddingGifts from './components/WeddingGifts';
-import Registry from './components/Registry';
-import Guestbook from './components/Guestbook';
 import Footer from './components/Footer';
 import AdminDashboardModal from './components/AdminDashboardModal';
 
@@ -51,12 +49,6 @@ function WeddingApp() {
 
         {/* 9. Wedding Gifts (id: gifts) */}
         <WeddingGifts />
-
-        {/* 10. Gift Registry (id: registry) */}
-        <Registry />
-
-        {/* 11. Guest Book (id: guestbook) */}
-        <Guestbook />
       </main>
 
       {/* 12. Footer */}
