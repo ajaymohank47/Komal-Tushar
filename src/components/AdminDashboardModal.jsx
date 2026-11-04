@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { X, ShieldCheck, Users, Gift, Trash2, Plus, Calendar, Utensils, MessageSquare, Image, ExternalLink } from 'lucide-react';
+import { X, ShieldCheck, Users, Gift, Trash2, Plus, Calendar, Utensils, MessageSquare, Image, ExternalLink, RefreshCw } from 'lucide-react';
 import { IMAGE_SLOTS, SlotCard, AddGalleryPhotoForm, AddedGalleryPhotoCard } from '../pages/Admin';
 import { useImageContext } from '../contexts/ImageContext';
 
@@ -24,7 +24,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
     if (isOpen) {
       loadAdminData();
     }
-  }, [isOpen]);
+  }, [isOpen, activeTab]);
 
   const loadAdminData = async () => {
     try {
@@ -140,6 +140,20 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
         <div className="p-6 overflow-y-auto flex-grow">
           {activeTab === 'rsvps' && (
             <div className="space-y-6">
+              {/* Header with refresh */}
+              <div className="flex items-center justify-between">
+                <h4 className="font-serif text-sm uppercase tracking-widest text-gold-400 font-semibold">
+                  RSVP Submissions
+                </h4>
+                <button
+                  onClick={loadAdminData}
+                  disabled={loading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                  <span>{loading ? 'Loading…' : 'Refresh'}</span>
+                </button>
+              </div>
               {/* Summary Cards */}
               {rsvpData.summary && (
                 <div className="grid grid-cols-2 gap-4">
