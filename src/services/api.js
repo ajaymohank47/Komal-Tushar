@@ -1,5 +1,12 @@
-// Client-side Local Storage Service for 100% Serverless / Frontend-only Operation
-// All state (Auth, RSVPs, Gifts, Guestbook) persists in the browser's localStorage.
+// Client-side & Supabase Synchronized Data Service
+// State (Auth, RSVPs, Gifts, Guestbook) persists in Supabase & localStorage.
+import { supabase } from '../lib/supabase';
+import dinnerSetImg from '../assets/images/gifts/dinner-set.jpg';
+import cookwareSetImg from '../assets/images/gifts/cookware-set.jpg';
+import foodProcessorImg from '../assets/images/gifts/food-processor.jpg';
+import coffeeMachineImg from '../assets/images/gifts/coffee-machine.jpg';
+import gasStoveImg from '../assets/images/gifts/gas-stove.jpg';
+import castIronTawaImg from '../assets/images/gifts/cast-iron-tawa.jpg';
 
 const STORAGE_KEYS = {
   AUTH_USER: 'wedding_auth_user',
@@ -8,72 +15,72 @@ const STORAGE_KEYS = {
   GUESTBOOK: 'wedding_guestbook_data'
 };
 
-const INITIAL_GIFTS = [
+export const INITIAL_GIFTS = [
   {
-    id: "gift-1",
-    name: "Espresso Machine",
-    price: "₹18,000",
-    description: "A café-quality espresso maker for slow mornings together.",
+    id: "gift-dinner-set",
+    name: "Porcelain Dinner Set (with Gold Rim)",
+    price: "₹8,500",
+    description: "Delicate porcelain dinner set with gold trim for hosting festive family dinners.",
     status: "Available",
     reservedBy: null,
     reservedByName: null,
     reservedAt: null,
-    image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=800&q=80"
+    image: dinnerSetImg
   },
   {
-    id: "gift-2",
-    name: "Luxury Bed Linen Set",
-    price: "₹6,500",
-    description: "Soft cotton sheets to make our new home cozy.",
-    status: "Reserved",
-    reservedBy: "dev-guest-priya",
-    reservedByName: "Priya & Rohan",
-    reservedAt: "2026-09-12T10:30:00.000Z",
-    image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "gift-3",
-    name: "Dinner Set (12 pcs)",
-    price: "₹9,000",
-    description: "Elegant dinnerware for hosting family & friends.",
+    id: "gift-cookware-set",
+    name: "Bergner Tri-Ply Stainless Steel Cookware Set",
+    price: "₹10,500",
+    description: "High-grade stainless steel saucepan, kadai, casserole and frypan set for everyday home cooking.",
     status: "Available",
     reservedBy: null,
     reservedByName: null,
     reservedAt: null,
-    image: "https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=800&q=80"
+    image: cookwareSetImg
   },
   {
-    id: "gift-4",
-    name: "Weekend Getaway Fund",
-    price: "Any amount",
-    description: "Contribute to our first mini-honeymoon trip.",
+    id: "gift-food-processor",
+    name: "Inalsa Easy Prep Pro Food Processor",
+    price: "₹6,800",
+    description: "Versatile kitchen food processor with slicing, shredding, kneading, and chopping attachments.",
     status: "Available",
     reservedBy: null,
     reservedByName: null,
     reservedAt: null,
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+    image: foodProcessorImg
   },
   {
-    id: "gift-5",
-    name: "Cast Iron Cookware",
-    price: "₹7,500",
-    description: "For the many home-cooked meals ahead.",
-    status: "Available",
-    reservedBy: null,
-    reservedByName: null,
-    reservedAt: null,
-    image: "https://images.unsplash.com/photo-1584990347449-39904719001b?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "gift-6",
-    name: "Smart Home Speaker",
+    id: "gift-coffee-machine",
+    name: "Agaro Imperial Espresso Coffee Machine",
     price: "₹12,000",
-    description: "Music and light for our new nest.",
+    description: "Barista-grade 15-bar espresso maker with milk steam wand for cozy morning coffees.",
     status: "Available",
     reservedBy: null,
     reservedByName: null,
     reservedAt: null,
-    image: "https://images.unsplash.com/photo-1543512214-318c7553f230?auto=format&fit=crop&w=800&q=80"
+    image: coffeeMachineImg
+  },
+  {
+    id: "gift-gas-stove",
+    name: "Smart 3-Burner Glass Top Gas Stove",
+    price: "₹9,200",
+    description: "Elegant black toughened glass hob with high-efficiency brass burners and digital timer display.",
+    status: "Available",
+    reservedBy: null,
+    reservedByName: null,
+    reservedAt: null,
+    image: gasStoveImg
+  },
+  {
+    id: "gift-cast-iron-tawa",
+    name: "Solara Cast Iron Tawa (Pre-Seasoned)",
+    price: "₹3,500",
+    description: "Heavy-duty cast iron tawa for crispy dosas, rotis, and Indian flatbreads. Naturally non-stick with long-lasting seasoning.",
+    status: "Available",
+    reservedBy: null,
+    reservedByName: null,
+    reservedAt: null,
+    image: castIronTawaImg
   }
 ];
 
@@ -116,7 +123,6 @@ function setStored(key, value) {
 export const api = {
   // Auth
   async googleLogin(credential) {
-    // Decode base64 Google JWT client-side
     let name = 'Google Guest';
     let email = 'guest@gmail.com';
     let avatar = '';
@@ -169,10 +175,37 @@ export const api = {
     return user ? { user } : null;
   },
 
-  // Gifts
+  // ── Gifts (Supabase Synchronized & Atomic) ───────────────────────────
   async getGifts() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('wedding_gifts')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map(g => ({
+            id: g.id,
+            name: g.name,
+            price: g.price,
+            description: g.description,
+            image: g.image,
+            status: g.status,
+            reservedBy: g.reserved_by,
+            reservedByName: g.reserved_by_name,
+            reservedAt: g.reserved_at
+          }));
+          setStored(STORAGE_KEYS.GIFTS, mapped);
+          return mapped;
+        }
+      } catch (err) {
+        console.warn('Could not fetch gifts from Supabase, using local fallback:', err);
+      }
+    }
+
     let gifts = getStored(STORAGE_KEYS.GIFTS, null);
-    if (!gifts) {
+    if (!gifts || gifts.length === 0) {
       gifts = INITIAL_GIFTS;
       setStored(STORAGE_KEYS.GIFTS, gifts);
     }
@@ -181,15 +214,69 @@ export const api = {
 
   async reserveGift(id, guestName = 'A Guest') {
     const currentUser = getStored(STORAGE_KEYS.AUTH_USER, null);
+    const name = guestName?.trim() || currentUser?.name || 'A Guest';
+    const userId = currentUser?.id || `guest_${Date.now()}`;
+
+    if (supabase) {
+      // 1. Check current status in database
+      const { data: current } = await supabase
+        .from('wedding_gifts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (current && current.status === 'Reserved') {
+        throw new Error(`This gift is already reserved by ${current.reserved_by_name || 'another guest'}. Please choose another gift.`);
+      }
+
+      // 2. Perform atomic update where status is still 'Available'
+      const { data: updated, error } = await supabase
+        .from('wedding_gifts')
+        .update({
+          status: 'Reserved',
+          reserved_by: userId,
+          reserved_by_name: name,
+          reserved_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .eq('status', 'Available')
+        .select()
+        .single();
+
+      if (error || !updated) {
+        throw new Error('This gift was just reserved by someone else! Please choose another item.');
+      }
+
+      const gift = {
+        id: updated.id,
+        name: updated.name,
+        price: updated.price,
+        description: updated.description,
+        image: updated.image,
+        status: updated.status,
+        reservedBy: updated.reserved_by,
+        reservedByName: updated.reserved_by_name,
+        reservedAt: updated.reserved_at
+      };
+
+      // Also mirror to local storage
+      const localGifts = getStored(STORAGE_KEYS.GIFTS, INITIAL_GIFTS);
+      const idx = localGifts.findIndex(g => g.id === id);
+      if (idx >= 0) {
+        localGifts[idx] = gift;
+        setStored(STORAGE_KEYS.GIFTS, localGifts);
+      }
+
+      return { success: true, gift };
+    }
+
+    // Local fallback if Supabase unavailable
     const gifts = await this.getGifts();
     const gift = gifts.find(g => g.id === id);
     if (!gift) throw new Error('Gift not found');
 
-    const name = guestName || currentUser?.name || 'A Guest';
-    const userId = currentUser?.id || `guest_${Date.now()}`;
-
-    if (gift.status === 'Reserved' && gift.reservedBy && gift.reservedBy !== userId) {
-      throw new Error(`This gift was already reserved by ${gift.reservedByName || 'another guest'}`);
+    if (gift.status === 'Reserved') {
+      throw new Error(`This gift is already reserved by ${gift.reservedByName || 'another guest'}`);
     }
 
     gift.status = 'Reserved';
@@ -203,6 +290,53 @@ export const api = {
 
   async unreserveGift(id) {
     const currentUser = getStored(STORAGE_KEYS.AUTH_USER, null);
+    const userId = currentUser?.id;
+    const isAdmin = Boolean(currentUser?.isAdmin);
+
+    if (supabase) {
+      const { data: current } = await supabase
+        .from('wedding_gifts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!current) throw new Error('Gift not found');
+
+      if (current.reserved_by && current.reserved_by !== userId && !isAdmin) {
+        throw new Error('You can only cancel your own reservation');
+      }
+
+      const { data: updated, error } = await supabase
+        .from('wedding_gifts')
+        .update({
+          status: 'Available',
+          reserved_by: null,
+          reserved_by_name: null,
+          reserved_at: null
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error || !updated) {
+        throw new Error(error?.message || 'Failed to cancel reservation');
+      }
+
+      const gift = {
+        id: updated.id,
+        name: updated.name,
+        price: updated.price,
+        description: updated.description,
+        image: updated.image,
+        status: 'Available',
+        reservedBy: null,
+        reservedByName: null,
+        reservedAt: null
+      };
+
+      return { success: true, gift };
+    }
+
     const gifts = await this.getGifts();
     const gift = gifts.find(g => g.id === id);
     if (!gift) throw new Error('Gift not found');
@@ -219,131 +353,174 @@ export const api = {
   // RSVP
   async getMyRsvp() {
     const currentUser = getStored(STORAGE_KEYS.AUTH_USER, null);
+    const localId = getStored('wedding_my_rsvp_id', null);
+
+    // Try Supabase first using stored id
+    if (supabase && localId) {
+      try {
+        const { data, error } = await supabase
+          .from('wedding_rsvps')
+          .select('*')
+          .eq('id', localId)
+          .single();
+        if (!error && data) {
+          return {
+            id: data.id,
+            userName: data.user_name,
+            userEmail: data.user_contact,
+            guestCount: data.guest_count,
+            mealPreference: data.meal_preference,
+            message: data.message,
+            submittedAt: data.submitted_at
+          };
+        }
+      } catch (e) {
+        console.warn('Could not fetch RSVP from Supabase:', e);
+      }
+    }
+
+    // Local fallback
     const savedLocal = getStored('wedding_my_rsvp', null);
     if (savedLocal) return savedLocal;
     if (!currentUser) return null;
-
-    const rsvps = getStored(STORAGE_KEYS.RSVPS, []);
-    return rsvps.find(r => r.userId === currentUser.id || r.userEmail === currentUser.email) || null;
+    return null;
   },
 
   async submitRsvp(payload) {
     const currentUser = getStored(STORAGE_KEYS.AUTH_USER, null);
-    const rsvps = getStored(STORAGE_KEYS.RSVPS, []);
-
     const userName = payload.name?.trim() || currentUser?.name || 'Guest';
-    const userEmail = payload.email?.trim() || currentUser?.email || '';
-    const userId = currentUser?.id || `guest_${Date.now()}`;
-
-    const existingIndex = rsvps.findIndex(r => 
-      (userEmail && r.userEmail === userEmail) || 
-      (r.userName && r.userName.toLowerCase() === userName.toLowerCase())
-    );
+    const userContact = payload.email?.trim() || currentUser?.email || '';
+    const existingId = getStored('wedding_my_rsvp_id', null);
+    const rsvpId = existingId || `rsvp_${Date.now()}`;
 
     const rsvpRecord = {
-      id: existingIndex >= 0 ? rsvps[existingIndex].id : `rsvp_${Date.now()}`,
-      userId,
+      id: rsvpId,
       userName,
-      userEmail,
-      attending: Boolean(payload.attending),
-      guestCount: payload.attending ? Math.max(1, parseInt(payload.guestCount, 10) || 1) : 0,
-      events: payload.events || { haldi: false, wedding: false, reception: false },
+      userEmail: userContact,
+      guestCount: Math.max(1, parseInt(payload.guestCount, 10) || 1),
       mealPreference: payload.mealPreference || 'Vegetarian',
-      message: payload.message || '',
+      message: payload.message?.trim() || '',
       updatedAt: new Date().toISOString()
     };
 
-    if (existingIndex >= 0) {
-      rsvps[existingIndex] = rsvpRecord;
-    } else {
-      rsvps.push(rsvpRecord);
+    // Save to Supabase
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('wedding_rsvps')
+          .upsert({
+            id: rsvpId,
+            user_name: userName,
+            user_contact: userContact,
+            guest_count: rsvpRecord.guestCount,
+            meal_preference: rsvpRecord.mealPreference,
+            message: rsvpRecord.message,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' });
+        if (error) console.warn('Supabase RSVP upsert error:', error.message);
+      } catch (e) {
+        console.warn('Could not save RSVP to Supabase:', e);
+      }
     }
 
-    setStored(STORAGE_KEYS.RSVPS, rsvps);
+    // Mirror to localStorage
+    setStored('wedding_my_rsvp_id', rsvpId);
     setStored('wedding_my_rsvp', rsvpRecord);
     return { success: true, rsvp: rsvpRecord };
   },
 
-  // Guestbook
-  async getGuestbook() {
-    let wishes = getStored(STORAGE_KEYS.GUESTBOOK, null);
-    if (!wishes) {
-      wishes = INITIAL_GUESTBOOK;
-      setStored(STORAGE_KEYS.GUESTBOOK, wishes);
-    }
-    return [...wishes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  },
-
-  async postGuestbook(message, authorName = '') {
-    const currentUser = getStored(STORAGE_KEYS.AUTH_USER, null);
-    const wishes = await this.getGuestbook();
-    const name = authorName.trim() || currentUser?.name || 'Well-Wisher';
-    const avatar = currentUser?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=d4af37&textColor=ffffff`;
-
-    const newEntry = {
-      id: `gb_${Date.now()}`,
-      userId: currentUser?.id || `guest_${Date.now()}`,
-      userName: name,
-      userAvatar: avatar,
-      message: message.trim(),
-      createdAt: new Date().toISOString()
-    };
-
-    wishes.unshift(newEntry);
-    setStored(STORAGE_KEYS.GUESTBOOK, wishes);
-    return { success: true, entry: newEntry };
-  },
-
-  // Admin Features
+  // Admin APIs
   async adminGetRsvps() {
+    // Try Supabase first
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('wedding_rsvps')
+          .select('*')
+          .order('submitted_at', { ascending: false });
+
+        if (!error && data) {
+          const rsvps = data.map(r => ({
+            id: r.id,
+            userName: r.user_name,
+            userEmail: r.user_contact,
+            guestCount: r.guest_count || 1,
+            mealPreference: r.meal_preference,
+            message: r.message,
+            submittedAt: r.submitted_at
+          }));
+          const totalGuests = rsvps.reduce((sum, r) => sum + (parseInt(r.guestCount, 10) || 1), 0);
+          return {
+            rsvps,
+            summary: {
+              totalResponses: rsvps.length,
+              totalGuests
+            }
+          };
+        }
+      } catch (e) {
+        console.warn('Could not fetch RSVPs from Supabase:', e);
+      }
+    }
+
+    // Local fallback
     const rsvps = getStored(STORAGE_KEYS.RSVPS, []);
-    const summary = {
-      totalResponses: rsvps.length,
-      attendingCount: rsvps.filter(r => r.attending).length,
-      declinedCount: rsvps.filter(r => !r.attending).length,
-      totalGuests: rsvps.filter(r => r.attending).reduce((sum, r) => sum + (r.guestCount || 1), 0),
-      events: {
-        haldi: rsvps.filter(r => r.attending && r.events?.haldi).reduce((sum, r) => sum + (r.guestCount || 1), 0),
-        wedding: rsvps.filter(r => r.attending && r.events?.wedding).reduce((sum, r) => sum + (r.guestCount || 1), 0),
-        reception: rsvps.filter(r => r.attending && r.events?.reception).reduce((sum, r) => sum + (r.guestCount || 1), 0),
-      },
-      mealPreferences: rsvps.filter(r => r.attending).reduce((acc, r) => {
-        acc[r.mealPreference] = (acc[r.mealPreference] || 0) + (r.guestCount || 1);
-        return acc;
-      }, {})
+    const totalGuests = rsvps.reduce((sum, r) => sum + (parseInt(r.guestCount, 10) || 1), 0);
+    return {
+      rsvps,
+      summary: {
+        totalResponses: rsvps.length,
+        totalGuests
+      }
     };
-    return { summary, rsvps };
   },
 
-  async adminAddGift(giftData) {
-    const gifts = await this.getGifts();
-    const newGift = {
-      id: `gift_${Date.now()}`,
-      name: giftData.name,
-      price: giftData.price,
-      description: giftData.description || '',
+  async adminAddGift(newGift) {
+    const id = `gift_${Date.now()}`;
+    const gift = {
+      id,
+      name: newGift.name,
+      price: newGift.price,
+      description: newGift.description || '',
+      image: newGift.image || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80',
       status: 'Available',
       reservedBy: null,
       reservedByName: null,
-      reservedAt: null,
-      image: giftData.image || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80'
+      reservedAt: null
     };
-    gifts.push(newGift);
+
+    if (supabase) {
+      try {
+        await supabase.from('wedding_gifts').insert({
+          id: gift.id,
+          name: gift.name,
+          price: gift.price,
+          description: gift.description,
+          image: gift.image,
+          status: 'Available'
+        });
+      } catch (e) {
+        console.error('Supabase adminAddGift error:', e);
+      }
+    }
+
+    const gifts = await this.getGifts();
+    gifts.push(gift);
     setStored(STORAGE_KEYS.GIFTS, gifts);
-    return { success: true, gift: newGift };
+    return { success: true, gift };
   },
 
   async adminDeleteGift(id) {
-    let gifts = await this.getGifts();
-    gifts = gifts.filter(g => g.id !== id);
-    setStored(STORAGE_KEYS.GIFTS, gifts);
-    return { success: true };
-  },
-
-  async adminDeleteGuestbook(id) {
-    let wishes = await this.getGuestbook();
-    wishes = wishes.filter(w => w.id !== id);
-    setStored(STORAGE_KEYS.GUESTBOOK, wishes);
+    if (supabase) {
+      try {
+        await supabase.from('wedding_gifts').delete().eq('id', id);
+      } catch (e) {
+        console.error('Supabase adminDeleteGift error:', e);
+      }
+    }
+    const gifts = await this.getGifts();
+    const filtered = gifts.filter(g => g.id !== id);
+    setStored(STORAGE_KEYS.GIFTS, filtered);
     return { success: true };
   }
 };

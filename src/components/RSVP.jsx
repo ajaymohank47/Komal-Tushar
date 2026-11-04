@@ -10,13 +10,7 @@ export default function RSVP() {
 
   const [guestName, setGuestName] = useState('');
   const [guestContact, setGuestContact] = useState('');
-  const [attending, setAttending] = useState(true);
   const [guestCount, setGuestCount] = useState(1);
-  const [events, setEvents] = useState({
-    haldi: true,
-    wedding: true,
-    reception: true
-  });
   const [mealPreference, setMealPreference] = useState('Vegetarian');
   const [message, setMessage] = useState('');
 
@@ -38,9 +32,7 @@ export default function RSVP() {
         setSubmittedRsvp(data);
         setGuestName(data.userName || '');
         setGuestContact(data.userEmail || '');
-        setAttending(data.attending);
         setGuestCount(data.guestCount || 1);
-        setEvents(data.events || { haldi: true, wedding: true, reception: true });
         setMealPreference(data.mealPreference || 'Vegetarian');
         setMessage(data.message || '');
       }
@@ -49,10 +41,6 @@ export default function RSVP() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleToggleEvent = (eventName) => {
-    setEvents(prev => ({ ...prev, [eventName]: !prev[eventName] }));
   };
 
   const handleSubmit = async (e) => {
@@ -69,9 +57,7 @@ export default function RSVP() {
       const res = await api.submitRsvp({
         name: guestName.trim(),
         email: guestContact.trim(),
-        attending,
-        guestCount: attending ? parseInt(guestCount, 10) : 0,
-        events: attending ? events : { haldi: false, wedding: false, reception: false },
+        guestCount: parseInt(guestCount, 10),
         mealPreference,
         message
       });
@@ -79,14 +65,12 @@ export default function RSVP() {
       setSubmittedRsvp(res.rsvp);
       setIsEditing(false);
 
-      if (attending) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#d4af37', '#f3e5ab', '#8b2635', '#ffffff']
-        });
-      }
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#d4af37', '#f3e5ab', '#8b2635', '#ffffff']
+      });
     } catch (err) {
       setStatusMessage(err.message || 'Failed to submit RSVP');
     } finally {
@@ -129,36 +113,18 @@ export default function RSVP() {
               Thank You!
             </span>
             <h3 className="font-cormorant text-2xl sm:text-3xl font-medium text-espresso-text mb-4">
-              {submittedRsvp.attending
-                ? `We are thrilled you're coming, ${submittedRsvp.userName}!`
-                : `We will miss you, ${submittedRsvp.userName}!`}
+              We are thrilled you're coming, {submittedRsvp.userName}!
             </h3>
 
             <div className="my-6 p-5 rounded-2xl bg-ivory-50 border border-gold-400/20 text-left text-xs sm:text-sm space-y-2 text-espresso-muted">
               <p>
-                <strong className="text-espresso-text font-serif uppercase tracking-wider">Status:</strong>{' '}
-                {submittedRsvp.attending ? 'Attending with Joy' : 'Unable to Attend'}
+                <strong className="text-espresso-text font-serif uppercase tracking-wider">Guests:</strong>{' '}
+                {submittedRsvp.guestCount}
               </p>
-              {submittedRsvp.attending && (
-                <>
-                  <p>
-                    <strong className="text-espresso-text font-serif uppercase tracking-wider">Guests:</strong>{' '}
-                    {submittedRsvp.guestCount}
-                  </p>
-                  <p>
-                    <strong className="text-espresso-text font-serif uppercase tracking-wider">Events:</strong>{' '}
-                    {[
-                      submittedRsvp.events?.haldi ? 'Haldi' : null,
-                      submittedRsvp.events?.wedding ? 'Wedding Ceremony' : null,
-                      submittedRsvp.events?.reception ? 'Reception' : null
-                    ].filter(Boolean).join(', ') || 'None selected'}
-                  </p>
-                  <p>
-                    <strong className="text-espresso-text font-serif uppercase tracking-wider">Meal:</strong>{' '}
-                    {submittedRsvp.mealPreference}
-                  </p>
-                </>
-              )}
+              <p>
+                <strong className="text-espresso-text font-serif uppercase tracking-wider">Meal:</strong>{' '}
+                {submittedRsvp.mealPreference}
+              </p>
               {submittedRsvp.message && (
                 <p>
                   <strong className="text-espresso-text font-serif uppercase tracking-wider">Message:</strong>{' '}
@@ -218,145 +184,52 @@ export default function RSVP() {
                   </div>
                 </div>
               </div>
-              {/* Attending Toggle */}
+
+              {/* Number of Guests */}
               <div>
-                <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2.5">
-                  Will you be able to attend?
+                <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2">
+                  Total Number of Guests
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setAttending(true)}
-                    className={`py-3 px-4 rounded-xl font-serif text-xs font-semibold tracking-wider uppercase transition-all ${
-                      attending
-                        ? 'bg-gold-500 text-white shadow-md'
-                        : 'bg-ivory-50 border border-gold-400/25 text-espresso-muted hover:border-gold-400'
-                    }`}
-                  >
-                    Joyfully Accept 💐
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAttending(false)}
-                    className={`py-3 px-4 rounded-xl font-serif text-xs font-semibold tracking-wider uppercase transition-all ${
-                      !attending
-                        ? 'bg-crimson-600 text-white shadow-md'
-                        : 'bg-ivory-50 border border-gold-400/25 text-espresso-muted hover:border-gold-400'
-                    }`}
-                  >
-                    Regretfully Decline
-                  </button>
+                <div className="flex items-center gap-2.5">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setGuestCount(num)}
+                      className={`w-10 h-10 rounded-xl font-serif text-sm font-semibold transition-all ${
+                        guestCount === num
+                          ? 'bg-gold-500 text-white shadow-sm'
+                          : 'bg-ivory-50 border border-gold-400/25 text-espresso-text hover:border-gold-400'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {attending && (
-                <>
-                  {/* Number of Guests */}
-                  <div>
-                    <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2">
-                      Total Number of Guests
-                    </label>
-                    <div className="flex items-center gap-2.5">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <button
-                          key={num}
-                          type="button"
-                          onClick={() => setGuestCount(num)}
-                          className={`w-10 h-10 rounded-xl font-serif text-sm font-semibold transition-all ${
-                            guestCount === num
-                              ? 'bg-gold-500 text-white shadow-sm'
-                              : 'bg-ivory-50 border border-gold-400/25 text-espresso-text hover:border-gold-400'
-                          }`}
-                        >
-                          {num}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Per-event attendance */}
-                  <div>
-                    <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2.5">
-                      Events you will attend:
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <label
-                        className={`p-3 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
-                          events.haldi
-                            ? 'bg-gold-50 border-gold-500 text-gold-900 font-medium'
-                            : 'bg-ivory-50 border-gold-400/25 text-espresso-muted'
-                        }`}
-                        onClick={() => handleToggleEvent('haldi')}
-                      >
-                        <span className="text-xs font-serif">🌼 Haldi</span>
-                        <input
-                          type="checkbox"
-                          checked={events.haldi}
-                          readOnly
-                          className="accent-gold-500 w-4 h-4 cursor-pointer"
-                        />
-                      </label>
-
-                      <label
-                        className={`p-3 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
-                          events.wedding
-                            ? 'bg-gold-50 border-gold-500 text-gold-900 font-medium'
-                            : 'bg-ivory-50 border-gold-400/25 text-espresso-muted'
-                        }`}
-                        onClick={() => handleToggleEvent('wedding')}
-                      >
-                        <span className="text-xs font-serif">🪔 Ceremony</span>
-                        <input
-                          type="checkbox"
-                          checked={events.wedding}
-                          readOnly
-                          className="accent-gold-500 w-4 h-4 cursor-pointer"
-                        />
-                      </label>
-
-                      <label
-                        className={`p-3 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
-                          events.reception
-                            ? 'bg-gold-50 border-gold-500 text-gold-900 font-medium'
-                            : 'bg-ivory-50 border-gold-400/25 text-espresso-muted'
-                        }`}
-                        onClick={() => handleToggleEvent('reception')}
-                      >
-                        <span className="text-xs font-serif">🥂 Reception</span>
-                        <input
-                          type="checkbox"
-                          checked={events.reception}
-                          readOnly
-                          className="accent-gold-500 w-4 h-4 cursor-pointer"
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Meal Preference */}
-                  <div>
-                    <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2">
-                      Meal Preference
-                    </label>
-                    <select
-                      value={mealPreference}
-                      onChange={(e) => setMealPreference(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-ivory-50 border border-gold-400/30 text-espresso-text text-sm focus:outline-none focus:border-gold-500"
-                    >
-                      {rsvp.mealOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </>
-              )}
+              {/* Meal Preference */}
+              <div>
+                <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2">
+                  Meal Preference
+                </label>
+                <select
+                  value={mealPreference}
+                  onChange={(e) => setMealPreference(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-ivory-50 border border-gold-400/30 text-espresso-text text-sm focus:outline-none focus:border-gold-500"
+                >
+                  {rsvp.mealOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Message */}
               <div>
                 <label className="block font-serif text-xs uppercase tracking-widest text-espresso-text mb-2">
-                  Warm message for Komal & Tushar
+                  Warm message for Komal &amp; Tushar
                 </label>
                 <textarea
                   rows="3"

@@ -142,22 +142,14 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
             <div className="space-y-6">
               {/* Summary Cards */}
               {rsvpData.summary && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
                     <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Total Responses</span>
                     <span className="font-serif text-2xl font-bold text-gold-300">{rsvpData.summary.totalResponses}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
-                    <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Attending Parties</span>
-                    <span className="font-serif text-2xl font-bold text-emerald-400">{rsvpData.summary.attendingCount}</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
                     <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Total Guest Count</span>
                     <span className="font-serif text-2xl font-bold text-gold-200">{rsvpData.summary.totalGuests}</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
-                    <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Declined</span>
-                    <span className="font-serif text-2xl font-bold text-stone-400">{rsvpData.summary.declinedCount}</span>
                   </div>
                 </div>
               )}
@@ -168,11 +160,11 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                   <thead className="bg-obsidian-900 border-b border-gold-500/20 text-stone-400 uppercase font-serif text-[10px] tracking-wider">
                     <tr>
                       <th className="p-3.5">Guest</th>
-                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5">Contact</th>
                       <th className="p-3.5">Guests</th>
-                      <th className="p-3.5">Events</th>
                       <th className="p-3.5">Meal</th>
                       <th className="p-3.5">Message</th>
+                      <th className="p-3.5">Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gold-500/10">
@@ -187,31 +179,16 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                         <tr key={r.id} className="hover:bg-gold-500/5">
                           <td className="p-3.5">
                             <span className="font-semibold text-stone-200 block">{r.userName}</span>
-                            <span className="text-[10px] text-stone-400">{r.userEmail}</span>
                           </td>
                           <td className="p-3.5">
-                            {r.attending ? (
-                              <span className="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-[10px] font-semibold uppercase">
-                                Attending
-                              </span>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded-full bg-crimson-950 border border-crimson-500/40 text-crimson-300 text-[10px] font-semibold uppercase">
-                                Declined
-                              </span>
-                            )}
+                            <span className="text-[10px] text-stone-400">{r.userEmail || '-'}</span>
                           </td>
-                          <td className="p-3.5 font-medium">{r.attending ? r.guestCount : 0}</td>
-                          <td className="p-3.5 text-stone-300">
-                            {r.attending ? (
-                              <div className="flex gap-1 flex-wrap">
-                                {r.events?.haldi && <span className="px-1.5 py-0.5 rounded bg-yellow-950/60 border border-yellow-500/30 text-yellow-300 text-[10px]">Haldi</span>}
-                                {r.events?.wedding && <span className="px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-500/30 text-amber-300 text-[10px]">Ceremony</span>}
-                                {r.events?.reception && <span className="px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-purple-300 text-[10px]">Reception</span>}
-                              </div>
-                            ) : '-'}
-                          </td>
-                          <td className="p-3.5 text-stone-300">{r.attending ? r.mealPreference : '-'}</td>
+                          <td className="p-3.5 font-medium text-gold-200">{r.guestCount || 1}</td>
+                          <td className="p-3.5 text-stone-300">{r.mealPreference || '-'}</td>
                           <td className="p-3.5 max-w-xs truncate text-stone-300 italic">{r.message || '-'}</td>
+                          <td className="p-3.5 text-stone-500 text-[10px]">
+                            {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}
+                          </td>
                         </tr>
                       ))
                     )}
