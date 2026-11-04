@@ -2,6 +2,63 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { weddingContent } from '../data/content';
 import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { useImage } from '../hooks/useImage';
+
+/** Inner component so useImage hook can be called per photo */
+function GalleryPhoto({ photo, index, onClick }) {
+  // Derive slot from photo.id ("gal-3" → "gallery-3")
+  // Falls back to positional index if id format is unexpected
+  const slotNum = photo.id ? photo.id.replace(/^gal-/, '') : String(index + 1);
+  const slotId = `gallery-${slotNum}`;
+  const src = useImage(slotId, photo.url);
+
+  return (
+    <motion.div
+      key={photo.id}
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+      onClick={() => onClick(index)}
+      className="group relative rounded-2xl overflow-hidden aspect-[4/3] cursor-pointer bg-white border border-gold-400/30 shadow-md hover:shadow-xl transition-all"
+    >
+      <img
+        src={src}
+        alt={photo.alt}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        loading="lazy"
+      />
+      {/* Hover overlay with Category Tag & Title */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
+        <span className="inline-block px-2.5 py-0.5 rounded-full bg-gold-500/80 text-white font-serif text-[10px] uppercase tracking-widest w-max mb-1">
+          {photo.category}
+        </span>
+        <h4 className="font-cormorant text-lg font-medium">
+          {photo.title}
+        </h4>
+        <div className="flex items-center gap-1.5 text-xs text-gold-300 mt-1">
+          <Eye className="w-3.5 h-3.5" />
+          <span className="text-[11px] font-light">View photo</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/** Lightbox image — also uses useImage so it shows the uploaded photo */
+function LightboxImage({ photo }) {
+  const slotNum = photo.id ? photo.id.replace(/^gal-/, '') : '1';
+  const slotId = `gallery-${slotNum}`;
+  const src = useImage(slotId, photo.url);
+  return (
+    <img
+      src={src}
+      alt={photo.alt}
+      className="max-h-[75vh] w-auto max-w-full rounded-xl object-contain border border-gold-400/40 shadow-2xl"
+    />
+  );
+}
 
 export default function Gallery() {
   const { gallery, global } = weddingContent;
@@ -73,37 +130,12 @@ export default function Gallery() {
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
             {filteredPhotos.map((photo, index) => (
-              <motion.div
+              <GalleryPhoto
                 key={photo.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                onClick={() => openLightbox(index)}
-                className="group relative rounded-2xl overflow-hidden aspect-[4/3] cursor-pointer bg-white border border-gold-400/30 shadow-md hover:shadow-xl transition-all"
-              >
-                <img
-                  src={photo.url}
-                  alt={photo.alt}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-
-                {/* Hover overlay with Category Tag & Title */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
-                  <span className="inline-block px-2.5 py-0.5 rounded-full bg-gold-500/80 text-white font-serif text-[10px] uppercase tracking-widest w-max mb-1">
-                    {photo.category}
-                  </span>
-                  <h4 className="font-cormorant text-lg font-medium">
-                    {photo.title}
-                  </h4>
-                  <div className="flex items-center gap-1.5 text-xs text-gold-300 mt-1">
-                    <Eye className="w-3.5 h-3.5" />
-                    <span className="text-[11px] font-light">View photo</span>
-                  </div>
-                </div>
-              </motion.div>
+                photo={photo}
+                index={index}
+                onClick={openLightbox}
+              />
             ))}
           </AnimatePresence>
         </motion.div>
@@ -135,10 +167,9 @@ export default function Gallery() {
             className="relative max-w-4xl max-h-[85vh] flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={filteredPhotos[lightboxIndex].url}
-              alt={filteredPhotos[lightboxIndex].alt}
-              className="max-h-[75vh] w-auto max-w-full rounded-xl object-contain border border-gold-400/40 shadow-2xl"
+            <LightboxImage
+              photo={filteredPhotos[lightboxIndex]}
+              index={lightboxIndex}
             />
             <div className="mt-4 text-center">
               <span className="inline-block px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-widest mb-1">

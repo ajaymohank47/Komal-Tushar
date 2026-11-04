@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { weddingContent } from '../data/content';
+import { useImage } from '../hooks/useImage';
 
-function MemberCard({ member, index }) {
+function MemberCard({ member, index, slotId }) {
   const [imgError, setImgError] = useState(false);
   const emoji = /mother|sister/i.test(member.relation) ? '👩' : '👨';
+  // Use uploaded image if a slotId is provided, otherwise fall back to member.photo
+  const photoSrc = useImage(slotId || '', member.photo);
 
   return (
     <motion.div
@@ -17,9 +20,9 @@ function MemberCard({ member, index }) {
       {/* Circular photo with gold ring */}
       <div className="relative w-[72px] h-[72px] sm:w-[88px] sm:h-[88px] rounded-full border-2 border-gold-400 p-[2px] bg-white shadow-md mb-2.5 group hover:scale-105 transition-transform duration-300">
         <div className="w-full h-full rounded-full overflow-hidden bg-ivory-200 flex items-center justify-center">
-          {!imgError && member.photo ? (
+          {!imgError && photoSrc ? (
             <img
-              src={member.photo}
+              src={photoSrc}
               alt={member.name}
               onError={() => setImgError(true)}
               className="w-full h-full object-cover object-top"
@@ -72,7 +75,12 @@ export default function Family() {
           </h3>
           <div className="grid grid-cols-4 gap-3 sm:gap-5 max-w-sm mx-auto">
             {family.groomFamily.members.map((m, i) => (
-              <MemberCard key={m.name} member={m} index={i} />
+              <MemberCard
+                key={m.name}
+                member={m}
+                index={i}
+                slotId={m.name === 'Dayanand Pawar' ? 'family-dayanand' : undefined}
+              />
             ))}
           </div>
         </motion.div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
+import { ImageProvider } from './contexts/ImageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FallingPetals from './components/FallingPetals';
@@ -13,6 +14,7 @@ import RSVP from './components/RSVP';
 import WeddingGifts from './components/WeddingGifts';
 import Footer from './components/Footer';
 import AdminDashboardModal from './components/AdminDashboardModal';
+import Admin from './pages/Admin';
 
 function WeddingApp() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -61,9 +63,14 @@ function WeddingApp() {
 }
 
 export default function App() {
+  // Hidden /admin route — no react-router-dom needed
+  const isAdmin = typeof window !== 'undefined' && window.location.pathname === '/admin';
+
   return (
     <AuthProvider>
-      <WeddingApp />
+      <ImageProvider>
+        {isAdmin ? <Admin /> : <WeddingApp />}
+      </ImageProvider>
     </AuthProvider>
   );
 }

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { weddingContent } from '../data/content';
 import { Calendar, ChevronDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useImage } from '../hooks/useImage';
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState({ days: '059', hours: '00', minutes: '00', seconds: '00' });
@@ -37,6 +38,7 @@ function useCountdown(targetDate) {
 export default function Hero() {
   const { hero, countdown } = weddingContent;
   const timeLeft = useCountdown(countdown.targetDate);
+  const heroBg = useImage('hero', hero.backgroundImage);
 
   const downloadICS = () => {
     try {
@@ -75,7 +77,7 @@ export default function Hero() {
       {/* Background photo */}
       <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-center md:bg-[center_22%]"
-        style={{ backgroundImage: `url(${hero.backgroundImage})` }}
+        style={{ backgroundImage: `url(${heroBg})` }}
       >
         {/* Soft golden overlay for warmth */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(41,29,20,0.50) 0%, rgba(41,29,20,0.65) 50%, rgba(41,29,20,0.85) 100%)' }} />
