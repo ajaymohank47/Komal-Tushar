@@ -46,6 +46,20 @@ function MemberCard({ member, index, slotId }) {
   );
 }
 
+const groomSlotMap = {
+  'Dayanand Pawar': 'family-dayanand',
+  'Geeta Pawar': 'family-geeta',
+  'Tejas Pawar': 'family-tejas',
+  'Sayali Jadhav-Pawar': 'family-sayali',
+};
+
+const brideSlotMap = {
+  'Shashikant Shinde': 'family-shashikant',
+  'Sushma Shinde': 'family-sushma',
+  'Sarvesh Shinde': 'family-sarvesh',
+  'Akshatat Shinde': 'family-akshatat',
+};
+
 export default function Family() {
   const { family, global } = weddingContent;
 
@@ -79,7 +93,7 @@ export default function Family() {
                 key={m.name}
                 member={m}
                 index={i}
-                slotId={m.name === 'Dayanand Pawar' ? 'family-dayanand' : undefined}
+                slotId={groomSlotMap[m.name]}
               />
             ))}
           </div>
@@ -104,7 +118,12 @@ export default function Family() {
           </h3>
           <div className="grid grid-cols-4 gap-3 sm:gap-5 max-w-sm mx-auto">
             {family.brideFamily.members.map((m, i) => (
-              <MemberCard key={m.name} member={m} index={i} />
+              <MemberCard 
+                key={m.name} 
+                member={m} 
+                index={i} 
+                slotId={brideSlotMap[m.name]} 
+              />
             ))}
           </div>
         </motion.div>

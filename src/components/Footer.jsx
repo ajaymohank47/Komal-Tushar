@@ -36,7 +36,7 @@ export default function Footer() {
         </nav>
 
         {/* Bottom Line & Made With Love Notice */}
-        <div className="pt-6 border-t border-gold-400/15 w-full max-w-xs flex items-center justify-center text-[11px] text-stone-400 font-light">
+        <div className="pt-6 border-t border-gold-400/15 w-full max-w-xs flex flex-col items-center justify-center gap-2 text-[11px] text-stone-400 font-light">
           <span>
             {footer.loveNotice.split('♥').map((part, i, arr) => (
               <React.Fragment key={i}>
@@ -45,6 +45,12 @@ export default function Footer() {
               </React.Fragment>
             ))}
           </span>
+          <a
+            href="/admin"
+            className="text-[10px] text-gold-500/60 hover:text-gold-400 uppercase tracking-widest transition-colors font-serif"
+          >
+            ✦ Admin &amp; Photo Customization
+          </a>
         </div>
       </div>
     </footer>

@@ -26,3 +26,4 @@ dist-ssr
 # Local env secrets
 .env
 .env.local
+.mcp.json

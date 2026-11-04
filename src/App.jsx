@@ -63,8 +63,10 @@ function WeddingApp() {
 }
 
 export default function App() {
-  // Hidden /admin route — no react-router-dom needed
-  const isAdmin = typeof window !== 'undefined' && window.location.pathname === '/admin';
+  // Hidden /admin route — supports both /admin and /admin/
+  const isAdmin =
+    typeof window !== 'undefined' &&
+    (window.location.pathname.replace(/\/+$/, '') === '/admin');
 
   return (
     <AuthProvider>

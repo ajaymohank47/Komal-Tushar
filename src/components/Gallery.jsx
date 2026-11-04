@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { weddingContent } from '../data/content';
-import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { useImage } from '../hooks/useImage';
+import { useImageContext } from '../contexts/ImageContext';
 
 /** Inner component so useImage hook can be called per photo */
 function GalleryPhoto({ photo, index, onClick }) {
-  // Derive slot from photo.id ("gal-3" → "gallery-3")
-  // Falls back to positional index if id format is unexpected
   const slotNum = photo.id ? photo.id.replace(/^gal-/, '') : String(index + 1);
   const slotId = `gallery-${slotNum}`;
-  const src = useImage(slotId, photo.url);
+  // For custom photos, photo.url is already their uploaded URL
+  const src = photo.isCustom ? photo.url : useImage(slotId, photo.url);
 
   return (
     <motion.div
@@ -25,7 +25,7 @@ function GalleryPhoto({ photo, index, onClick }) {
     >
       <img
         src={src}
-        alt={photo.alt}
+        alt={photo.alt || photo.title}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading="lazy"
       />
@@ -46,15 +46,15 @@ function GalleryPhoto({ photo, index, onClick }) {
   );
 }
 
-/** Lightbox image — also uses useImage so it shows the uploaded photo */
+/** Lightbox image — shows uploaded or fallback photo */
 function LightboxImage({ photo }) {
   const slotNum = photo.id ? photo.id.replace(/^gal-/, '') : '1';
   const slotId = `gallery-${slotNum}`;
-  const src = useImage(slotId, photo.url);
+  const src = photo.isCustom ? photo.url : useImage(slotId, photo.url);
   return (
     <img
       src={src}
-      alt={photo.alt}
+      alt={photo.alt || photo.title}
       className="max-h-[75vh] w-auto max-w-full rounded-xl object-contain border border-gold-400/40 shadow-2xl"
     />
   );
@@ -62,12 +62,52 @@ function LightboxImage({ photo }) {
 
 export default function Gallery() {
   const { gallery, global } = weddingContent;
+  const { galleryPhotos = [] } = useImageContext();
+
   const [activeFilter, setActiveFilter] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const filteredPhotos = activeFilter === 'All'
-    ? gallery.photos
-    : gallery.photos.filter((p) => p.category.toLowerCase() === activeFilter.toLowerCase());
+  // Combine default 9 photos with any custom photos added via Supabase
+  const allPhotos = [
+    ...gallery.photos,
+    ...galleryPhotos.map((p) => ({
+      id: p.id,
+      category: p.category,
+      title: p.title,
+      alt: p.title,
+      url: p.image_url,
+      isCustom: true
+    }))
+  ];
+
+  // Dynamically compute category chips (standard + any added custom categories)
+  const standardChips = ["All", "prewedding", "engagement", "family", "travel"];
+  const customCategories = Array.from(
+    new Set(
+      galleryPhotos
+        .map((p) => (p.category || '').trim().toLowerCase())
+        .filter((cat) => cat && !standardChips.map(c => c.toLowerCase()).includes(cat))
+    )
+  );
+  const filterChips = [...standardChips, ...customCategories];
+
+  // Filter photos
+  const filteredPhotos = activeFilter.toLowerCase() === 'all'
+    ? allPhotos
+    : allPhotos.filter((p) => (p.category || '').toLowerCase() === activeFilter.toLowerCase());
+
+  // Show only first 9 if not expanded
+  const INITIAL_LIMIT = 9;
+  const hasMore = filteredPhotos.length > INITIAL_LIMIT;
+  const displayedPhotos = isExpanded || !hasMore
+    ? filteredPhotos
+    : filteredPhotos.slice(0, INITIAL_LIMIT);
+
+  const handleFilterChange = (chip) => {
+    setActiveFilter(chip);
+    setIsExpanded(false); // Reset expansion on filter change
+  };
 
   const openLightbox = (index) => {
     setLightboxIndex(index);
@@ -108,12 +148,12 @@ export default function Gallery() {
 
         {/* Filter Chips */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
-          {gallery.filterChips.map((chip) => {
+          {filterChips.map((chip) => {
             const isActive = activeFilter.toLowerCase() === chip.toLowerCase();
             return (
               <button
                 key={chip}
-                onClick={() => setActiveFilter(chip)}
+                onClick={() => handleFilterChange(chip)}
                 className={`px-5 py-2 rounded-full text-xs uppercase tracking-widest font-serif transition-all ${
                   isActive
                     ? 'bg-gold-500 text-white font-bold shadow-md scale-105'
@@ -129,7 +169,7 @@ export default function Gallery() {
         {/* Responsive Photo Grid */}
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
-            {filteredPhotos.map((photo, index) => (
+            {displayedPhotos.map((photo, index) => (
               <GalleryPhoto
                 key={photo.id}
                 photo={photo}
@@ -139,6 +179,32 @@ export default function Gallery() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Expand / Collapse Button if more than 9 pictures */}
+        {hasMore && (
+          <div className="mt-12 text-center">
+            {!isExpanded ? (
+              <button
+                onClick={() => setIsExpanded(true)}
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full border-2 border-gold-500/60 bg-gradient-to-r from-gold-500/10 via-gold-500/20 to-gold-500/10 hover:from-gold-500 hover:to-gold-600 hover:text-white text-gold-900 font-serif text-xs uppercase tracking-widest font-bold shadow-md hover:shadow-xl transition-all duration-300 group"
+              >
+                <span>View More Moments ({filteredPhotos.length - INITIAL_LIMIT} more)</span>
+                <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5 text-gold-700 group-hover:text-white" />
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsExpanded(false);
+                  document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full border border-gold-400/40 bg-white hover:bg-gold-50 text-espresso-muted hover:text-gold-800 font-serif text-xs uppercase tracking-widest font-medium transition-all shadow-sm"
+              >
+                <span>Show Less</span>
+                <ChevronUp className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
@@ -169,7 +235,6 @@ export default function Gallery() {
           >
             <LightboxImage
               photo={filteredPhotos[lightboxIndex]}
-              index={lightboxIndex}
             />
             <div className="mt-4 text-center">
               <span className="inline-block px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-widest mb-1">
@@ -179,7 +244,7 @@ export default function Gallery() {
                 {filteredPhotos[lightboxIndex].title}
               </h3>
               <p className="text-xs text-stone-400">
-                {filteredPhotos[lightboxIndex].alt} · {lightboxIndex + 1} of {filteredPhotos.length}
+                {lightboxIndex + 1} of {filteredPhotos.length}
               </p>
             </div>
           </div>

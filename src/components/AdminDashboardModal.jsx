@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { X, ShieldCheck, Users, Gift, Trash2, Plus, Calendar, Utensils, MessageSquare } from 'lucide-react';
+import { X, ShieldCheck, Users, Gift, Trash2, Plus, Calendar, Utensils, MessageSquare, Image, ExternalLink } from 'lucide-react';
+import { IMAGE_SLOTS, SlotCard, AddGalleryPhotoForm, AddedGalleryPhotoCard } from '../pages/Admin';
+import { useImageContext } from '../contexts/ImageContext';
 
 export default function AdminDashboardModal({ isOpen, onClose }) {
+  const { galleryPhotos = [] } = useImageContext();
   const [activeTab, setActiveTab] = useState('rsvps');
   const [rsvpData, setRsvpData] = useState({ summary: null, rsvps: [] });
   const [gifts, setGifts] = useState([]);
@@ -119,11 +122,23 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
             <Gift className="w-4 h-4" />
             <span>Gift Registry ({gifts.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('photos')}
+            className={`py-3 px-4 font-serif text-xs uppercase tracking-widest font-semibold border-b-2 transition-all flex items-center gap-2 ${
+              activeTab === 'photos'
+                ? 'border-gold-400 text-gold-300'
+                : 'border-transparent text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <Image className="w-4 h-4" />
+            <span>Customize Photos</span>
+          </button>
         </div>
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto flex-grow">
-          {activeTab === 'rsvps' ? (
+          {activeTab === 'rsvps' && (
             <div className="space-y-6">
               {/* Summary Cards */}
               {rsvpData.summary && (
@@ -204,7 +219,9 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                 </table>
               </div>
             </div>
-          ) : (
+          )}
+
+          {activeTab === 'gifts' && (
             <div className="space-y-8">
               {/* Add New Gift Form */}
               <div className="p-5 rounded-2xl bg-obsidian-950 border border-gold-500/20">
@@ -307,6 +324,68 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'photos' && (
+            <div className="space-y-8">
+              <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="font-serif text-gold-300 font-semibold text-sm uppercase tracking-wider mb-1">
+                    Supabase Image Customization
+                  </h4>
+                  <p className="text-xs text-stone-400">
+                    Upload photos to replace hero, our story, gallery, or family images. All changes sync to Supabase in real-time.
+                  </p>
+                </div>
+                <a
+                  href="/admin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-1.5 rounded-lg border border-gold-400/40 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider flex items-center gap-1.5 transition-all whitespace-nowrap"
+                >
+                  <span>Open Full Admin</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              {/* Slots Section */}
+              <div className="space-y-8">
+                {IMAGE_SLOTS.map((section) => (
+                  <div key={section.section} className="space-y-3">
+                    <h5 className="font-serif text-xs uppercase tracking-widest text-gold-400 font-bold border-b border-gold-500/20 pb-2">
+                      {section.section}
+                    </h5>
+
+                    {section.section === 'Photo Gallery' && (
+                      <div className="space-y-4">
+                        <AddGalleryPhotoForm />
+                        {galleryPhotos.length > 0 && (
+                          <div>
+                            <h6 className="font-serif text-xs text-gold-300 uppercase tracking-wider mb-2 font-semibold">
+                              ✦ Extra Added Moments ({galleryPhotos.length})
+                            </h6>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                              {galleryPhotos.map((photo) => (
+                                <AddedGalleryPhotoCard key={photo.id} photo={photo} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <h6 className="font-serif text-[11px] text-stone-400 uppercase tracking-wider mb-2">
+                          Default Gallery Slots (1–9)
+                        </h6>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {section.slots.map((slot) => (
+                        <SlotCard key={slot.id} slot={slot} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

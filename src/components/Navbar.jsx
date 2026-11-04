@@ -53,26 +53,40 @@ export default function Navbar({ onOpenAdmin }) {
 
         {/* Admin Action (if enabled) */}
         {isAdmin && (
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-2">
             <button
               onClick={onOpenAdmin}
               className="px-3 py-1 text-[11px] rounded-full border border-gold-400/50 bg-gold-500/15 hover:bg-gold-500/25 text-gold-300 flex items-center gap-1.5 transition-all"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-              <span>Admin</span>
+              <span>Dashboard</span>
             </button>
+            <a
+              href="/admin"
+              className="px-3 py-1 text-[11px] rounded-full border border-gold-400/40 hover:border-gold-400 bg-obsidian-950/80 hover:bg-gold-500/20 text-gold-300 flex items-center gap-1.5 transition-all text-decoration-none"
+            >
+              <span>Photo Admin</span>
+            </a>
           </div>
         )}
 
         {/* Mobile Menu Hamburger */}
         <div className="flex md:hidden items-center space-x-2">
           {isAdmin && (
-            <button
-              onClick={onOpenAdmin}
-              className="px-2 py-0.5 text-[10px] rounded-full border border-gold-400/40 bg-gold-500/10 text-gold-300"
-            >
-              Admin
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={onOpenAdmin}
+                className="px-2 py-0.5 text-[10px] rounded-full border border-gold-400/40 bg-gold-500/10 text-gold-300"
+              >
+                Admin
+              </button>
+              <a
+                href="/admin"
+                className="px-2 py-0.5 text-[10px] rounded-full border border-gold-400/30 bg-black/40 text-gold-300 text-decoration-none"
+              >
+                Photos
+              </a>
+            </div>
           )}
 
           <button
@@ -99,6 +113,13 @@ export default function Navbar({ onOpenAdmin }) {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs uppercase tracking-wider text-gold-600 hover:text-gold-700 font-serif py-1 border-t border-gray-100 pt-2"
+            >
+              ✦ Photo Admin (/admin)
+            </a>
           </div>
         </div>
       )}

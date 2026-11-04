@@ -9,7 +9,7 @@ import { useImageContext } from '../contexts/ImageContext';
  * @returns {string} - The image URL to render
  */
 export function useImage(slotId, fallback) {
-  const { images } = useImageContext();
-  return images[slotId] || fallback;
+  const context = useImageContext();
+  const images = context?.images || {};
+  return (slotId && images[slotId]) || fallback;
 }
-
