@@ -10,32 +10,35 @@ function StoryCollage({ index }) {
   const img2 = useImage(`story-${i}-2`, null);
   const img3 = useImage(`story-${i}-3`, null);
 
-  // Only render if at least one image is available
-  if (!img1 && !img2 && !img3) return null;
-
   const photos = [img1, img2, img3].filter(Boolean);
+  if (photos.length === 0) return null;
 
-  // Three slightly rotated polaroid cards
   const rotations = ['-rotate-3', 'rotate-2', '-rotate-1'];
   const offsets = [
-    'translate-x-0 translate-y-0',
-    'translate-x-3 translate-y-4',
-    'translate-x-1 translate-y-8',
+    { top: 0, left: 0, zIndex: 3, width: 90 },
+    { top: 18, left: 14, zIndex: 2, width: 78 },
+    { top: 36, left: 28, zIndex: 1, width: 70 },
   ];
 
   return (
-    <div className="flex-shrink-0 relative w-28 sm:w-36" style={{ height: 160 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="relative"
+      style={{ width: 120, height: 160 }}
+    >
       {photos.map((src, pi) => (
         <div
           key={pi}
           className={`absolute bg-white shadow-md border border-gold-300/40 rounded-sm overflow-hidden
-            ${rotations[pi] || ''} ${offsets[pi] || ''}
-            transition-transform duration-300 hover:scale-105 hover:z-10`}
+            ${rotations[pi] || ''} transition-transform duration-300 hover:scale-105 hover:z-10`}
           style={{
-            width: pi === 0 ? 90 : pi === 1 ? 78 : 70,
-            top: pi === 0 ? 0 : pi === 1 ? 18 : 36,
-            left: pi === 0 ? 0 : pi === 1 ? 14 : 28,
-            zIndex: photos.length - pi,
+            width: offsets[pi].width,
+            top: offsets[pi].top,
+            left: offsets[pi].left,
+            zIndex: offsets[pi].zIndex,
             padding: 4,
           }}
         >
@@ -48,51 +51,15 @@ function StoryCollage({ index }) {
           />
         </div>
       ))}
-    </div>
-  );
-}
-
-function StoryItem({ item, index }) {
-  return (
-    <motion.div
-      key={item.year}
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.55, delay: index * 0.08 }}
-      className="relative"
-    >
-      {/* Dot on spine */}
-      <div className="absolute -left-8 sm:-left-10 top-1 w-4 h-4 rounded-full bg-[#faf6ee] border-2 border-gold-500 flex items-center justify-center">
-        <div className="w-1.5 h-1.5 rounded-full bg-gold-500" />
-      </div>
-
-      {/* Year label */}
-      <span className="font-cormorant text-[11px] uppercase tracking-[0.3em] text-[#D4848A] font-semibold block mb-1">
-        {item.year}
-      </span>
-
-      {/* Row: text + collage side by side */}
-      <div className="flex gap-5 items-start">
-        {/* Left: text */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-cormorant text-xl sm:text-2xl text-espresso-text font-normal mb-1.5 leading-tight">
-            {item.title}
-          </h3>
-          <p className="text-espresso-muted text-[11px] sm:text-xs font-light leading-relaxed">
-            {item.text}
-          </p>
-        </div>
-
-        {/* Right: floating collage (only if images uploaded) */}
-        <StoryCollage index={index} />
-      </div>
     </motion.div>
   );
 }
 
 export default function Story() {
   const { story, global } = weddingContent;
+
+  // Only render collages that have at least one uploaded image
+  const totalItems = story.timeline.length;
 
   return (
     <section id="story" className="py-20 px-4 bg-[#faf6ee] text-espresso-text relative overflow-hidden">
@@ -108,17 +75,13 @@ export default function Story() {
           <div className="text-gold-500 text-xs tracking-[0.5em] mt-4">{global.dividerOrnament}</div>
         </div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical gold spine */}
-          <div className="absolute left-0 top-2 bottom-8 w-[1px] bg-gradient-to-b from-gold-500/80 via-gold-400/40 to-transparent" />
-
-          <div className="space-y-14 pl-8 sm:pl-10">
-            {story.timeline.map((item, index) => (
-              <StoryItem key={item.year} item={item} index={index} />
-            ))}
-          </div>
+        {/* Collage grid */}
+        <div className="flex flex-wrap justify-center gap-10">
+          {Array.from({ length: totalItems }, (_, i) => (
+            <StoryCollage key={i} index={i} />
+          ))}
         </div>
+
       </div>
     </section>
   );
