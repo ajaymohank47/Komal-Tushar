@@ -375,10 +375,10 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
               <div className="p-4 rounded-xl bg-white border border-gold-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <h4 className="font-serif text-[#8c6721] font-semibold text-sm uppercase tracking-wider mb-1">
-                    Supabase Image Customization
+                    Photo &amp; Image Customization
                   </h4>
                   <p className="text-xs text-[#7c6a59]">
-                    Upload photos to replace hero, our story, gallery, or family images. All changes sync to Supabase in real-time.
+                    Upload photos to replace hero, our story, gallery, or family images. All changes sync in real-time.
                   </p>
                 </div>
                 <a

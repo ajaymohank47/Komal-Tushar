@@ -817,7 +817,7 @@ export function AddGalleryPhotoForm() {
               transition: 'background 0.2s',
             }}
           >
-            {uploading ? 'Uploading to Supabase…' : '+ Add Photo to Gallery'}
+            {uploading ? 'Uploading…' : '+ Add Photo to Gallery'}
           </button>
         </div>
       </form>
@@ -1251,7 +1251,7 @@ export default function Admin() {
         <div>
           <h1 style={{ ...headingStyle, fontSize: 20 }}>✦ Wedding Administration</h1>
           <p style={{ color: '#7c6a59', fontSize: 11, margin: '2px 0 0', fontFamily: 'serif' }}>
-            Komal &amp; Tushar · Live Supabase Cloud Sync
+            Komal &amp; Tushar · Wedding Portal
           </p>
         </div>
 
@@ -1564,7 +1564,7 @@ export default function Admin() {
                     <tr>
                       <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', color: '#7c6a59' }}>
                         {loadingRsvps
-                          ? 'Loading RSVPs from Supabase…'
+                          ? 'Loading RSVPs…'
                           : rsvpSearch
                           ? `No RSVPs matching "${rsvpSearch}".`
                           : 'No RSVP responses received yet. Once guests submit the RSVP form on the site, their entries will show here in real-time!'}
@@ -1957,38 +1957,22 @@ export default function Admin() {
             {/* How-to banner */}
             <div
               style={{
-                background: '#261a09',
-                border: '1px solid #3d2e0e',
+                background: '#ffffff',
+                border: '1px solid #ebdcc5',
+                boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                 borderRadius: 10,
                 padding: '14px 18px',
                 marginBottom: 32,
                 fontSize: 13,
                 lineHeight: 1.7,
-                color: '#c8a96e',
+                color: '#5c4a3b',
                 fontFamily: 'serif',
               }}
             >
-              <strong style={{ color: '#d4af37', display: 'block', marginBottom: 4, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: 12 }}>
+              <strong style={{ color: '#8c6721', display: 'block', marginBottom: 4, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: 12 }}>
                 How to use
               </strong>
-              Customize hero, story, family, and gallery photos. In the <strong>Photo Gallery</strong> section below, you can also <strong>add brand new photos</strong> with a category filter (Pre-wedding, Engagement, Family, Travel, etc.). All changes sync with Supabase Storage and Database in real-time!
-              {!isSupabaseConfigured && (
-                <span
-                  style={{
-                    display: 'block',
-                    marginTop: 10,
-                    padding: '8px 12px',
-                    background: '#3b1a1a',
-                    border: '1px solid #7f1d1d',
-                    borderRadius: 6,
-                    color: '#fca5a5',
-                    fontSize: 12,
-                  }}
-                >
-                  ⚠ <strong>Supabase not configured.</strong> Create a <code>.env</code> file with
-                  <code> VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>.
-                </span>
-              )}
+              Customize hero, story, family, and gallery photos. In the <strong>Photo Gallery</strong> section below, you can also <strong>add brand new photos</strong> with a category filter (Pre-wedding, Engagement, Family, Travel, etc.). All changes sync in real-time!
             </div>
 
             {/* Sections */}
