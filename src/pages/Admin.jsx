@@ -44,22 +44,13 @@ export const IMAGE_SLOTS = [
   {
     section: 'Our Story',
     slots: [
-      { id: 'story-1-1', label: '1. First Meeting · Photo A', fallback: storyImg1 },
-      { id: 'story-1-2', label: '1. First Meeting · Photo B', fallback: storyImg1 },
-      { id: 'story-1-3', label: '1. First Meeting · Photo C', fallback: storyImg1 },
-      { id: 'story-2-1', label: '2. First Date · Photo A', fallback: storyImg2 },
-      { id: 'story-2-2', label: '2. First Date · Photo B', fallback: storyImg2 },
-      { id: 'story-2-3', label: '2. First Date · Photo C', fallback: storyImg2 },
-      { id: 'story-3-1', label: '3. The Proposal · Photo A', fallback: storyImg3 },
-      { id: 'story-3-2', label: '3. The Proposal · Photo B', fallback: storyImg3 },
-      { id: 'story-3-3', label: '3. The Proposal · Photo C', fallback: storyImg3 },
-      { id: 'story-4-1', label: '4. Engagement · Photo A', fallback: storyImg4 },
-      { id: 'story-4-2', label: '4. Engagement · Photo B', fallback: storyImg4 },
-      { id: 'story-4-3', label: '4. Engagement · Photo C', fallback: storyImg4 },
-      { id: 'story-5-1', label: '5. Wedding Day · Photo A', fallback: storyImg5 },
-      { id: 'story-5-2', label: '5. Wedding Day · Photo B', fallback: storyImg5 },
-      { id: 'story-5-3', label: '5. Wedding Day · Photo C', fallback: storyImg5 },
+      { id: 'story-1-1', label: 'Photo 1', fallback: storyImg1 },
+      { id: 'story-1-2', label: 'Photo 2', fallback: storyImg1 },
+      { id: 'story-1-3', label: 'Photo 3', fallback: storyImg1 },
     ],
+    isDynamic: true,
+    maxGroups: 5,
+    groupFallbacks: [storyImg1, storyImg2, storyImg3, storyImg4, storyImg5],
   },
   {
     section: 'Photo Gallery',
@@ -430,6 +421,78 @@ export function SlotCard({ slot }) {
         style={{ display: 'none' }}
         onChange={handleUpload}
       />
+    </div>
+  );
+}
+
+/** Dynamic story groups: starts with 3 cards, button adds 3 more (up to maxGroups * 3) */
+function StoryGroupsAdmin({ section }) {
+  const { images } = useImageContext();
+  const [visibleGroups, setVisibleGroups] = React.useState(1);
+
+  // Auto-expand groups that already have uploaded images
+  React.useEffect(() => {
+    let max = 1;
+    for (let g = 1; g <= section.maxGroups; g++) {
+      const hasAny = [`story-${g}-1`, `story-${g}-2`, `story-${g}-3`].some(id => images[id]);
+      if (hasAny) max = g;
+    }
+    setVisibleGroups(Math.max(1, max));
+  }, [images]);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {Array.from({ length: visibleGroups }, (_, gi) => {
+        const g = gi + 1;
+        const slots = [1, 2, 3].map(n => ({
+          id: `story-${g}-${n}`,
+          label: `Group ${g} · Photo ${n}`,
+          fallback: section.groupFallbacks[gi] || section.groupFallbacks[0],
+        }));
+        return (
+          <div key={g}>
+            <p style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              color: '#a08552',
+              fontSize: 12,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}>
+              ✦ Group {g}
+            </p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 14,
+            }}>
+              {slots.map(slot => <SlotCard key={slot.id} slot={slot} />)}
+            </div>
+          </div>
+        );
+      })}
+
+      {visibleGroups < section.maxGroups && (
+        <button
+          onClick={() => setVisibleGroups(v => v + 1)}
+          style={{
+            alignSelf: 'flex-start',
+            background: 'transparent',
+            border: '1.5px dashed #b8860b',
+            color: '#b8860b',
+            borderRadius: 8,
+            padding: '8px 20px',
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+          }}
+        >
+          + Add Another Group of 3
+        </button>
+      )}
     </div>
   );
 }
@@ -2013,17 +2076,22 @@ export default function Admin() {
                   </>
                 )}
 
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                    gap: 16,
-                  }}
-                >
-                  {section.slots.map(slot => (
-                    <SlotCard key={slot.id} slot={slot} />
-                  ))}
-                </div>
+                {/* Dynamic Our Story section: 3 cards + "Add Group" */}
+                {section.isDynamic ? (
+                  <StoryGroupsAdmin section={section} />
+                ) : (
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                      gap: 16,
+                    }}
+                  >
+                    {section.slots.map(slot => (
+                      <SlotCard key={slot.id} slot={slot} />
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
