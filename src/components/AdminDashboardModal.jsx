@@ -72,39 +72,39 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-fadeIn">
       <div 
-        className="relative w-full max-w-5xl h-[85vh] rounded-3xl bg-[#120d0a] border border-gold-500/30 shadow-2xl flex flex-col overflow-hidden text-stone-100"
+        className="relative w-full max-w-5xl h-[85vh] rounded-3xl bg-[#faf6ee] border border-gold-400/40 shadow-2xl flex flex-col overflow-hidden text-[#2c1810]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gold-500/20 bg-obsidian-950">
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gold-400/20 bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-400">
+            <div className="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-400 flex items-center justify-center text-[#8c6721]">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-serif text-xl sm:text-2xl font-bold gold-gradient-text uppercase">
                 Admin Dashboard
               </h3>
-              <p className="text-xs text-stone-400">Manage RSVPs, Wedding Registry & Settings</p>
+              <p className="text-xs text-[#7c6a59]">Manage RSVPs, Wedding Registry & Settings</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-stone-400 hover:text-gold-300 hover:bg-gold-500/10 transition-colors"
+            className="p-2 rounded-full text-[#7c6a59] hover:text-[#8c6721] hover:bg-gold-500/10 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-gold-500/15 bg-obsidian-900/60 px-6">
+        <div className="flex border-b border-gold-400/20 bg-[#f5eedc] px-6">
           <button
             onClick={() => setActiveTab('rsvps')}
             className={`py-3 px-4 font-serif text-xs uppercase tracking-widest font-semibold border-b-2 transition-all flex items-center gap-2 ${
               activeTab === 'rsvps'
-                ? 'border-gold-400 text-gold-300'
-                : 'border-transparent text-stone-400 hover:text-stone-200'
+                ? 'border-[#b8860b] text-[#8c6721]'
+                : 'border-transparent text-[#7c6a59] hover:text-[#2c1810]'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -115,8 +115,8 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
             onClick={() => setActiveTab('gifts')}
             className={`py-3 px-4 font-serif text-xs uppercase tracking-widest font-semibold border-b-2 transition-all flex items-center gap-2 ${
               activeTab === 'gifts'
-                ? 'border-gold-400 text-gold-300'
-                : 'border-transparent text-stone-400 hover:text-stone-200'
+                ? 'border-[#b8860b] text-[#8c6721]'
+                : 'border-transparent text-[#7c6a59] hover:text-[#2c1810]'
             }`}
           >
             <Gift className="w-4 h-4" />
@@ -127,8 +127,8 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
             onClick={() => setActiveTab('photos')}
             className={`py-3 px-4 font-serif text-xs uppercase tracking-widest font-semibold border-b-2 transition-all flex items-center gap-2 ${
               activeTab === 'photos'
-                ? 'border-gold-400 text-gold-300'
-                : 'border-transparent text-stone-400 hover:text-stone-200'
+                ? 'border-[#b8860b] text-[#8c6721]'
+                : 'border-transparent text-[#7c6a59] hover:text-[#2c1810]'
             }`}
           >
             <Image className="w-4 h-4" />
@@ -142,7 +142,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
             <div className="space-y-6">
               {/* Header with refresh and export */}
               <div className="flex items-center justify-between">
-                <h4 className="font-serif text-sm uppercase tracking-widest text-gold-400 font-semibold">
+                <h4 className="font-serif text-sm uppercase tracking-widest text-[#8c6721] font-semibold">
                   RSVP Submissions
                 </h4>
                 <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                   <button
                     onClick={loadAdminData}
                     disabled={loading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 hover:bg-gold-500/20 text-[#8c6721] text-xs font-serif uppercase tracking-wider transition-all disabled:opacity-50"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                     <span>{loading ? 'Loading…' : 'Refresh'}</span>
@@ -183,21 +183,21 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
               {/* Summary Cards */}
               {rsvpData.summary && (
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
-                    <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Total Responses</span>
-                    <span className="font-serif text-2xl font-bold text-gold-300">{rsvpData.summary.totalResponses}</span>
+                  <div className="p-4 rounded-xl bg-white border border-gold-400/25 text-center">
+                    <span className="text-[10px] uppercase font-serif text-[#7c6a59] block tracking-wider">Total Responses</span>
+                    <span className="font-serif text-2xl font-bold text-[#8c6721]">{rsvpData.summary.totalResponses}</span>
                   </div>
-                  <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/20 text-center">
-                    <span className="text-[10px] uppercase font-serif text-stone-400 block tracking-wider">Total Guest Count</span>
-                    <span className="font-serif text-2xl font-bold text-gold-200">{rsvpData.summary.totalGuests}</span>
+                  <div className="p-4 rounded-xl bg-white border border-gold-400/25 text-center">
+                    <span className="text-[10px] uppercase font-serif text-[#7c6a59] block tracking-wider">Total Guest Count</span>
+                    <span className="font-serif text-2xl font-bold text-[#8c6721]">{rsvpData.summary.totalGuests}</span>
                   </div>
                 </div>
               )}
 
               {/* RSVP Table */}
-              <div className="rounded-2xl border border-gold-500/20 overflow-hidden bg-obsidian-950">
+              <div className="rounded-2xl border border-gold-400/25 overflow-hidden bg-white">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-obsidian-900 border-b border-gold-500/20 text-stone-400 uppercase font-serif text-[10px] tracking-wider">
+                  <thead className="bg-[#f8f3e8] border-b border-gold-400/25 text-[#7c6a59] uppercase font-serif text-[10px] tracking-wider">
                     <tr>
                       <th className="p-3.5">Guest</th>
                       <th className="p-3.5">Contact</th>
@@ -219,14 +219,14 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       rsvpData.rsvps.map((r) => (
                         <tr key={r.id} className="hover:bg-gold-500/5">
                           <td className="p-3.5">
-                            <span className="font-semibold text-stone-200 block">{r.userName}</span>
+                            <span className="font-semibold text-[#2c1810] block">{r.userName}</span>
                           </td>
                           <td className="p-3.5">
-                            <span className="text-[10px] text-stone-400">{r.userEmail || '-'}</span>
+                            <span className="text-[10px] text-[#7c6a59]">{r.userEmail || '-'}</span>
                           </td>
-                          <td className="p-3.5 font-medium text-gold-200">{r.guestCount || 1}</td>
-                          <td className="p-3.5 text-stone-300">{r.mealPreference || '-'}</td>
-                          <td className="p-3.5 max-w-xs truncate text-stone-300 italic">{r.message || '-'}</td>
+                          <td className="p-3.5 font-medium text-[#8c6721]">{r.guestCount || 1}</td>
+                          <td className="p-3.5 text-[#4a3525]">{r.mealPreference || '-'}</td>
+                          <td className="p-3.5 max-w-xs truncate text-[#4a3525] italic">{r.message || '-'}</td>
                           <td className="p-3.5 text-stone-500 text-[10px]">
                             {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}
                           </td>
@@ -266,8 +266,8 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
           {activeTab === 'gifts' && (
             <div className="space-y-8">
               {/* Add New Gift Form */}
-              <div className="p-5 rounded-2xl bg-obsidian-950 border border-gold-500/20">
-                <h4 className="font-serif text-sm uppercase tracking-wider text-gold-400 font-semibold mb-3 flex items-center gap-1.5">
+              <div className="p-5 rounded-2xl bg-white border border-gold-400/25">
+                <h4 className="font-serif text-sm uppercase tracking-wider text-[#8c6721] font-semibold mb-3 flex items-center gap-1.5">
                   <Plus className="w-4 h-4" />
                   <span>Add New Registry Item</span>
                 </h4>
@@ -279,7 +279,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       value={newGift.name}
                       onChange={e => setNewGift({ ...newGift, name: e.target.value })}
                       required
-                      className="w-full p-2.5 rounded-lg bg-obsidian-900 border border-gold-500/20 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
                     />
                   </div>
                   <div>
@@ -289,7 +289,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       value={newGift.price}
                       onChange={e => setNewGift({ ...newGift, price: e.target.value })}
                       required
-                      className="w-full p-2.5 rounded-lg bg-obsidian-900 border border-gold-500/20 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -298,7 +298,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       placeholder="Image URL (Unsplash or direct image link)"
                       value={newGift.image}
                       onChange={e => setNewGift({ ...newGift, image: e.target.value })}
-                      className="w-full p-2.5 rounded-lg bg-obsidian-900 border border-gold-500/20 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -307,7 +307,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       placeholder="Description"
                       value={newGift.description}
                       onChange={e => setNewGift({ ...newGift, description: e.target.value })}
-                      className="w-full p-2.5 rounded-lg bg-obsidian-900 border border-gold-500/20 text-stone-100 placeholder-stone-500 resize-none"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500 resize-none"
                     ></textarea>
                   </div>
                   <div className="sm:col-span-2 flex justify-end">
@@ -323,9 +323,9 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
               </div>
 
               {/* Gift Items Table */}
-              <div className="rounded-2xl border border-gold-500/20 overflow-hidden bg-obsidian-950">
+              <div className="rounded-2xl border border-gold-400/25 overflow-hidden bg-white">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-obsidian-900 border-b border-gold-500/20 text-stone-400 uppercase font-serif text-[10px] tracking-wider">
+                  <thead className="bg-[#f8f3e8] border-b border-gold-400/25 text-[#7c6a59] uppercase font-serif text-[10px] tracking-wider">
                     <tr>
                       <th className="p-3.5">Image</th>
                       <th className="p-3.5">Gift</th>
@@ -339,10 +339,10 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                     {gifts.map(g => (
                       <tr key={g.id} className="hover:bg-gold-500/5">
                         <td className="p-3.5">
-                          <img src={g.image} alt={g.name} className="w-12 h-10 object-cover rounded border border-gold-500/20" />
+                          <img src={g.image} alt={g.name} className="w-12 h-10 object-cover rounded border border-gold-400/25" />
                         </td>
-                        <td className="p-3.5 font-semibold text-stone-200">{g.name}</td>
-                        <td className="p-3.5 text-gold-300 font-medium">{g.price}</td>
+                        <td className="p-3.5 font-semibold text-[#2c1810]">{g.name}</td>
+                        <td className="p-3.5 text-[#8c6721] font-medium">{g.price}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
                             g.status === 'Reserved'
@@ -352,7 +352,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                             {g.status}
                           </span>
                         </td>
-                        <td className="p-3.5 text-stone-400">{g.reservedByName || '-'}</td>
+                        <td className="p-3.5 text-[#7c6a59]">{g.reservedByName || '-'}</td>
                         <td className="p-3.5 text-right">
                           <button
                             onClick={() => handleDeleteGift(g.id)}
@@ -372,12 +372,12 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
 
           {activeTab === 'photos' && (
             <div className="space-y-8">
-              <div className="p-4 rounded-xl bg-obsidian-950 border border-gold-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-white border border-gold-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h4 className="font-serif text-gold-300 font-semibold text-sm uppercase tracking-wider mb-1">
+                  <h4 className="font-serif text-[#8c6721] font-semibold text-sm uppercase tracking-wider mb-1">
                     Supabase Image Customization
                   </h4>
-                  <p className="text-xs text-stone-400">
+                  <p className="text-xs text-[#7c6a59]">
                     Upload photos to replace hero, our story, gallery, or family images. All changes sync to Supabase in real-time.
                   </p>
                 </div>
@@ -385,7 +385,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                   href="/admin"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3.5 py-1.5 rounded-lg border border-gold-400/40 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider flex items-center gap-1.5 transition-all whitespace-nowrap"
+                  className="px-3.5 py-1.5 rounded-lg border border-gold-400/40 bg-gold-500/10 hover:bg-gold-500/20 text-[#8c6721] text-xs font-serif uppercase tracking-wider flex items-center gap-1.5 transition-all whitespace-nowrap"
                 >
                   <span>Open Full Admin</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -396,7 +396,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
               <div className="space-y-8">
                 {IMAGE_SLOTS.map((section) => (
                   <div key={section.section} className="space-y-3">
-                    <h5 className="font-serif text-xs uppercase tracking-widest text-gold-400 font-bold border-b border-gold-500/20 pb-2">
+                    <h5 className="font-serif text-xs uppercase tracking-widest text-[#8c6721] font-bold border-b border-gold-400/25 pb-2">
                       {section.section}
                     </h5>
 
@@ -405,7 +405,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                         <AddGalleryPhotoForm />
                         {galleryPhotos.length > 0 && (
                           <div>
-                            <h6 className="font-serif text-xs text-gold-300 uppercase tracking-wider mb-2 font-semibold">
+                            <h6 className="font-serif text-xs text-[#8c6721] uppercase tracking-wider mb-2 font-semibold">
                               ✦ Extra Added Moments ({galleryPhotos.length})
                             </h6>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
@@ -415,7 +415,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                             </div>
                           </div>
                         )}
-                        <h6 className="font-serif text-[11px] text-stone-400 uppercase tracking-wider mb-2">
+                        <h6 className="font-serif text-[11px] text-[#7c6a59] uppercase tracking-wider mb-2">
                           Default Gallery Slots (1–9)
                         </h6>
                       </div>

@@ -199,8 +199,9 @@ export function SlotCard({ slot }) {
   return (
     <div
       style={{
-        background: '#261a09',
-        border: '1px solid #3d2e0e',
+        background: '#ffffff',
+        border: '1px solid #ebdcc5',
+        boxShadow: '0 2px 8px rgba(184, 134, 11, 0.05)',
         borderRadius: 12,
         padding: 16,
         display: 'flex',
@@ -236,9 +237,9 @@ export function SlotCard({ slot }) {
             padding: '2px 6px',
             borderRadius: 4,
             fontWeight: 700,
-            background: isCustomized ? '#166534' : '#33230f',
-            color: isCustomized ? '#86efac' : '#9a804e',
-            border: `1px solid ${isCustomized ? '#22c55e' : '#57411a'}`,
+            background: isCustomized ? '#ecfdf5' : '#faf6ee',
+            color: isCustomized ? '#065f46' : '#7c6a59',
+            border: `1px solid ${isCustomized ? '#a7f3d0' : '#dfcfb3'}`,
           }}
         >
           {isCustomized ? 'Custom' : 'Default'}
@@ -252,8 +253,8 @@ export function SlotCard({ slot }) {
           height: 115,
           borderRadius: 8,
           overflow: 'hidden',
-          border: '1px solid #3d2e0e',
-          background: '#1a1209',
+          border: '1px solid #ebdcc5',
+          background: '#faf6ee',
           position: 'relative',
         }}
       >
@@ -305,8 +306,8 @@ export function SlotCard({ slot }) {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           style={{
-            background: uploading ? '#3d2e0e' : '#d4af37',
-            color: uploading ? '#7a6030' : '#1a1209',
+            background: uploading ? '#dfcfb3' : '#b8860b',
+            color: uploading ? '#7c6a59' : '#ffffff',
             border: 'none',
             borderRadius: 7,
             padding: '8px 12px',
@@ -333,7 +334,7 @@ export function SlotCard({ slot }) {
               flex: 1,
               background: 'transparent',
               border: '1px solid #3d2e0e',
-              color: '#9a804e',
+              color: '#7c6a59',
               borderRadius: 6,
               padding: '4px 6px',
               fontSize: 11,
@@ -536,12 +537,12 @@ export function AddGalleryPhotoForm() {
   return (
     <div
       style={{
-        background: '#1f1508',
+        background: '#ffffff',
         border: '1.5px solid #d4af37',
         borderRadius: 14,
         padding: '20px 24px',
         marginBottom: 24,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        boxShadow: '0 4px 16px rgba(184, 134, 11, 0.08)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -549,7 +550,7 @@ export function AddGalleryPhotoForm() {
           <h3
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              color: '#d4af37',
+              color: '#8c6721',
               fontSize: 18,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -559,7 +560,7 @@ export function AddGalleryPhotoForm() {
           >
             ✦ Add New Photo to "Our Moments" Gallery
           </h3>
-          <p style={{ color: '#a08552', fontSize: 12, margin: '4px 0 0', fontFamily: 'serif' }}>
+          <p style={{ color: '#7c6a59', fontSize: 12, margin: '4px 0 0', fontFamily: 'serif' }}>
             Upload extra pictures and assign them to a category filter. If more than 9 pictures are added, the website provides an elegant "View More Moments" expand button.
           </p>
         </div>
@@ -574,7 +575,7 @@ export function AddGalleryPhotoForm() {
                 display: 'block',
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 12,
-                color: '#d4af37',
+                color: '#8c6721',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
                 marginBottom: 6,
@@ -590,11 +591,11 @@ export function AddGalleryPhotoForm() {
               onChange={(e) => setTitle(e.target.value)}
               style={{
                 width: '100%',
-                background: '#140c04',
-                border: '1px solid #4a3814',
+                background: '#fdfbf7',
+                border: '1px solid #dfcfb3',
                 borderRadius: 8,
                 padding: '9px 12px',
-                color: '#f5e6c8',
+                color: '#2c1810',
                 fontSize: 13,
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -610,7 +611,7 @@ export function AddGalleryPhotoForm() {
                 display: 'block',
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 12,
-                color: '#d4af37',
+                color: '#8c6721',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
                 marginBottom: 6,
@@ -624,11 +625,11 @@ export function AddGalleryPhotoForm() {
               onChange={(e) => setCategory(e.target.value)}
               style={{
                 width: '100%',
-                background: '#140c04',
-                border: '1px solid #4a3814',
+                background: '#fdfbf7',
+                border: '1px solid #dfcfb3',
                 borderRadius: 8,
                 padding: '9px 12px',
-                color: '#f5e6c8',
+                color: '#2c1810',
                 fontSize: 13,
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -637,7 +638,7 @@ export function AddGalleryPhotoForm() {
               }}
             >
               {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id} style={{ background: '#1a1209' }}>
+                <option key={c.id} value={c.id} style={{ background: '#ffffff', color: '#2c1810' }}>
                   {c.label}
                 </option>
               ))}
@@ -653,7 +654,7 @@ export function AddGalleryPhotoForm() {
                 display: 'block',
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 12,
-                color: '#d4af37',
+                color: '#8c6721',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
                 marginBottom: 6,
@@ -668,11 +669,11 @@ export function AddGalleryPhotoForm() {
               onChange={(e) => setCustomCategory(e.target.value)}
               style={{
                 width: '100%',
-                background: '#140c04',
-                border: '1px solid #4a3814',
+                background: '#fdfbf7',
+                border: '1px solid #dfcfb3',
                 borderRadius: 8,
                 padding: '9px 12px',
-                color: '#f5e6c8',
+                color: '#2c1810',
                 fontSize: 13,
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -689,9 +690,9 @@ export function AddGalleryPhotoForm() {
             type="button"
             onClick={() => setIsUrlMode(false)}
             style={{
-              background: !isUrlMode ? '#d4af37' : 'transparent',
-              color: !isUrlMode ? '#1a1209' : '#a08552',
-              border: `1px solid ${!isUrlMode ? '#d4af37' : '#4a3814'}`,
+              background: !isUrlMode ? '#b8860b' : '#faf6ee',
+              color: !isUrlMode ? '#ffffff' : '#7c6a59',
+              border: `1px solid ${!isUrlMode ? '#b8860b' : '#dfcfb3'}`,
               borderRadius: 6,
               padding: '4px 12px',
               fontSize: 11,
@@ -707,9 +708,9 @@ export function AddGalleryPhotoForm() {
             type="button"
             onClick={() => setIsUrlMode(true)}
             style={{
-              background: isUrlMode ? '#d4af37' : 'transparent',
-              color: isUrlMode ? '#1a1209' : '#a08552',
-              border: `1px solid ${isUrlMode ? '#d4af37' : '#4a3814'}`,
+              background: isUrlMode ? '#b8860b' : '#faf6ee',
+              color: isUrlMode ? '#ffffff' : '#7c6a59',
+              border: `1px solid ${isUrlMode ? '#b8860b' : '#dfcfb3'}`,
               borderRadius: 6,
               padding: '4px 12px',
               fontSize: 11,
@@ -731,11 +732,11 @@ export function AddGalleryPhotoForm() {
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
               style={{
-                background: '#2b1c09',
-                border: '1px dashed #d4af37',
+                background: '#faf6ee',
+                border: '1px dashed #b8860b',
                 borderRadius: 8,
                 padding: '12px 18px',
-                color: '#d4af37',
+                color: '#8c6721',
                 fontSize: 13,
                 fontFamily: 'serif',
                 cursor: 'pointer',
@@ -770,11 +771,11 @@ export function AddGalleryPhotoForm() {
               onChange={(e) => setImageUrl(e.target.value)}
               style={{
                 width: '100%',
-                background: '#140c04',
-                border: '1px solid #4a3814',
+                background: '#fdfbf7',
+                border: '1px solid #dfcfb3',
                 borderRadius: 8,
                 padding: '9px 12px',
-                color: '#f5e6c8',
+                color: '#2c1810',
                 fontSize: 13,
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -843,8 +844,9 @@ export function AddedGalleryPhotoCard({ photo }) {
   return (
     <div
       style={{
-        background: '#261a09',
-        border: '1px solid #d4af37/50',
+        background: '#ffffff',
+        border: '1px solid #ebdcc5',
+        boxShadow: '0 2px 8px rgba(184, 134, 11, 0.05)',
         borderRadius: 12,
         padding: 14,
         display: 'flex',
@@ -857,7 +859,7 @@ export function AddedGalleryPhotoCard({ photo }) {
         <p
           style={{
             fontFamily: "'Cormorant Garamond', serif",
-            color: '#d4af37',
+            color: '#2c1810',
             fontSize: 13,
             letterSpacing: '0.08em',
             margin: 0,
@@ -1136,15 +1138,15 @@ export default function Admin() {
 
   const pageStyle = {
     minHeight: '100vh',
-    background: '#1a1209',
-    color: '#f5e6c8',
+    background: '#faf6ee',
+    color: '#2c1810',
     fontFamily: "'Cormorant Garamond', serif",
     padding: '0 0 60px',
   };
 
   const headingStyle = {
     fontFamily: "'Cormorant Garamond', serif",
-    color: '#d4af37',
+    color: '#8c6721',
     letterSpacing: '0.15em',
     textTransform: 'uppercase',
     margin: 0,
@@ -1163,8 +1165,9 @@ export default function Admin() {
       >
         <div
           style={{
-            background: '#261a09',
-            border: '1px solid #3d2e0e',
+            background: '#ffffff',
+            border: '1px solid #e8dcbe',
+            boxShadow: '0 10px 30px rgba(184, 134, 11, 0.08)',
             borderRadius: 16,
             padding: '40px 36px',
             width: '100%',
@@ -1172,10 +1175,10 @@ export default function Admin() {
             textAlign: 'center',
           }}
         >
-          <p style={{ color: '#d4af37', fontSize: 28, marginBottom: 4, ...headingStyle }}>
+          <p style={{ color: '#8c6721', fontSize: 28, marginBottom: 4, ...headingStyle }}>
             ✦ Admin Panel
           </p>
-          <p style={{ color: '#7a6030', fontSize: 13, marginBottom: 28, fontFamily: 'serif' }}>
+          <p style={{ color: '#7c6a59', fontSize: 13, marginBottom: 28, fontFamily: 'serif' }}>
             Komal &amp; Tushar · Wedding Site
           </p>
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1186,11 +1189,11 @@ export default function Admin() {
               onChange={e => setPassword(e.target.value)}
               autoFocus
               style={{
-                background: '#1a1209',
-                border: `1px solid ${authError ? '#f87171' : '#3d2e0e'}`,
+                background: '#fdfbf7',
+                border: `1px solid ${authError ? '#f87171' : '#dfcfb3'}`,
                 borderRadius: 8,
                 padding: '10px 14px',
-                color: '#f5e6c8',
+                color: '#2c1810',
                 fontFamily: 'serif',
                 fontSize: 15,
                 outline: 'none',
@@ -1206,8 +1209,8 @@ export default function Admin() {
             <button
               type="submit"
               style={{
-                background: '#d4af37',
-                color: '#1a1209',
+                background: '#b8860b',
+                color: '#ffffff',
                 border: 'none',
                 borderRadius: 8,
                 padding: '11px 0',
@@ -1233,20 +1236,21 @@ export default function Admin() {
       {/* Header */}
       <div
         style={{
-          borderBottom: '1px solid #3d2e0e',
+          borderBottom: '1px solid #e8dcbe',
           padding: '16px 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
-          background: '#1a1209',
+          background: '#ffffff',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
           zIndex: 20,
         }}
       >
         <div>
           <h1 style={{ ...headingStyle, fontSize: 20 }}>✦ Wedding Administration</h1>
-          <p style={{ color: '#7a6030', fontSize: 11, margin: '2px 0 0', fontFamily: 'serif' }}>
+          <p style={{ color: '#7c6a59', fontSize: 11, margin: '2px 0 0', fontFamily: 'serif' }}>
             Komal &amp; Tushar · Live Supabase Cloud Sync
           </p>
         </div>
@@ -1254,11 +1258,11 @@ export default function Admin() {
         <button
           onClick={() => window.location.href = '/'}
           style={{
-            background: 'transparent',
-            border: '1px solid #3d2e0e',
+            background: '#faf6ee',
+            border: '1px solid #dfcfb3',
             borderRadius: 8,
             padding: '6px 14px',
-            color: '#d4af37',
+            color: '#8c6721',
             fontSize: 12,
             cursor: 'pointer',
             fontFamily: 'serif',
@@ -1272,8 +1276,8 @@ export default function Admin() {
       {/* Tab Navigation */}
       <div
         style={{
-          borderBottom: '1px solid #3d2e0e',
-          background: '#20160a',
+          borderBottom: '1px solid #e8dcbe',
+          background: '#f5eedc',
           padding: '0 24px',
           display: 'flex',
           gap: 12,
@@ -1291,8 +1295,8 @@ export default function Admin() {
             padding: '14px 18px',
             background: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'rsvps' ? '2px solid #d4af37' : '2px solid transparent',
-            color: activeTab === 'rsvps' ? '#d4af37' : '#8c7647',
+            borderBottom: activeTab === 'rsvps' ? '2px solid #b8860b' : '2px solid transparent',
+            color: activeTab === 'rsvps' ? '#8c6721' : '#7c6a59',
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 14,
             fontWeight: 700,
@@ -1315,8 +1319,8 @@ export default function Admin() {
             padding: '14px 18px',
             background: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'gifts' ? '2px solid #d4af37' : '2px solid transparent',
-            color: activeTab === 'gifts' ? '#d4af37' : '#8c7647',
+            borderBottom: activeTab === 'gifts' ? '2px solid #b8860b' : '2px solid transparent',
+            color: activeTab === 'gifts' ? '#8c6721' : '#7c6a59',
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 14,
             fontWeight: 700,
@@ -1339,8 +1343,8 @@ export default function Admin() {
             padding: '14px 18px',
             background: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'photos' ? '2px solid #d4af37' : '2px solid transparent',
-            color: activeTab === 'photos' ? '#d4af37' : '#8c7647',
+            borderBottom: activeTab === 'photos' ? '2px solid #b8860b' : '2px solid transparent',
+            color: activeTab === 'photos' ? '#8c6721' : '#7c6a59',
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 14,
             fontWeight: 700,
@@ -1373,68 +1377,72 @@ export default function Admin() {
             >
               <div
                 style={{
-                  background: '#261a09',
-                  border: '1px solid #3d2e0e',
+                  background: '#ffffff',
+                  border: '1px solid #ebdcc5',
+                  boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                   borderRadius: 12,
                   padding: '18px 20px',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#7c6a59', display: 'block' }}>
                   Total Responses
                 </span>
-                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#d4af37', display: 'block', marginTop: 4 }}>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#8c6721', display: 'block', marginTop: 4 }}>
                   {rsvps.length}
                 </span>
               </div>
 
               <div
                 style={{
-                  background: '#261a09',
-                  border: '1px solid #3d2e0e',
+                  background: '#ffffff',
+                  border: '1px solid #ebdcc5',
+                  boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                   borderRadius: 12,
                   padding: '18px 20px',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#7c6a59', display: 'block' }}>
                   Total Guests Attending
                 </span>
-                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#86efac', display: 'block', marginTop: 4 }}>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#15803d', display: 'block', marginTop: 4 }}>
                   {rsvps.reduce((sum, r) => sum + (parseInt(r.guestCount, 10) || 1), 0)}
                 </span>
               </div>
 
               <div
                 style={{
-                  background: '#261a09',
-                  border: '1px solid #3d2e0e',
+                  background: '#ffffff',
+                  border: '1px solid #ebdcc5',
+                  boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                   borderRadius: 12,
                   padding: '18px 20px',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#7c6a59', display: 'block' }}>
                   Vegetarian Meals
                 </span>
-                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#fde047', display: 'block', marginTop: 4 }}>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#a16207', display: 'block', marginTop: 4 }}>
                   {rsvps.filter(r => (r.mealPreference || '').toLowerCase().includes('veg')).length}
                 </span>
               </div>
 
               <div
                 style={{
-                  background: '#261a09',
-                  border: '1px solid #3d2e0e',
+                  background: '#ffffff',
+                  border: '1px solid #ebdcc5',
+                  boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                   borderRadius: 12,
                   padding: '18px 20px',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#7c6a59', display: 'block' }}>
                   Blessings &amp; Notes
                 </span>
-                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#cbd5e1', display: 'block', marginTop: 4 }}>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#475569', display: 'block', marginTop: 4 }}>
                   {rsvps.filter(r => Boolean(r.message && r.message.trim())).length}
                 </span>
               </div>
@@ -1448,8 +1456,9 @@ export default function Admin() {
                 gap: 12,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                background: '#261a09',
-                border: '1px solid #3d2e0e',
+                background: '#ffffff',
+                border: '1px solid #ebdcc5',
+                boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                 borderRadius: 12,
                 padding: '14px 18px',
                 marginBottom: 20,
@@ -1457,7 +1466,7 @@ export default function Admin() {
             >
               {/* Search */}
               <div style={{ position: 'relative', flex: '1 1 260px' }}>
-                <Search size={15} style={{ position: 'absolute', left: 12, top: 11, color: '#9a804e' }} />
+                <Search size={15} style={{ position: 'absolute', left: 12, top: 11, color: '#7c6a59' }} />
                 <input
                   type="text"
                   placeholder="Search by name, contact, or note..."
@@ -1465,11 +1474,11 @@ export default function Admin() {
                   onChange={e => setRsvpSearch(e.target.value)}
                   style={{
                     width: '100%',
-                    background: '#1a1209',
-                    border: '1px solid #3d2e0e',
+                    background: '#fdfbf7',
+                    border: '1px solid #dfcfb3',
                     borderRadius: 8,
                     padding: '8px 12px 8px 36px',
-                    color: '#f5e6c8',
+                    color: '#2c1810',
                     fontSize: 13,
                     fontFamily: 'serif',
                     outline: 'none',
@@ -1487,11 +1496,11 @@ export default function Admin() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    background: '#33230f',
-                    border: '1px solid #57411a',
+                    background: '#faf6ee',
+                    border: '1px solid #dfcfb3',
                     borderRadius: 8,
                     padding: '8px 14px',
-                    color: '#d4af37',
+                    color: '#8c6721',
                     fontSize: 12,
                     fontFamily: 'serif',
                     letterSpacing: '0.08em',
@@ -1531,15 +1540,16 @@ export default function Admin() {
             {/* RSVP Table */}
             <div
               style={{
-                background: '#261a09',
-                border: '1px solid #3d2e0e',
+                background: '#ffffff',
+                border: '1px solid #ebdcc5',
+                boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                 borderRadius: 12,
                 overflowX: 'auto',
               }}
             >
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13, fontFamily: 'serif' }}>
                 <thead>
-                  <tr style={{ background: '#1e1408', borderBottom: '1px solid #3d2e0e', color: '#9a804e', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
+                  <tr style={{ background: '#f8f3e8', borderBottom: '1px solid #ebdcc5', color: '#7c6a59', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
                     <th style={{ padding: '14px 16px' }}>Guest Name</th>
                     <th style={{ padding: '14px 16px' }}>Contact</th>
                     <th style={{ padding: '14px 16px', textAlign: 'center' }}>Guests</th>
@@ -1552,7 +1562,7 @@ export default function Admin() {
                 <tbody>
                   {filteredRsvps.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', color: '#9a804e' }}>
+                      <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', color: '#7c6a59' }}>
                         {loadingRsvps
                           ? 'Loading RSVPs from Supabase…'
                           : rsvpSearch
@@ -1565,17 +1575,17 @@ export default function Admin() {
                       <tr
                         key={r.id}
                         style={{
-                          borderBottom: '1px solid #33230f',
+                          borderBottom: '1px solid #f0e6d6',
                           transition: 'background 0.2s',
                         }}
                       >
                         {/* Name */}
-                        <td style={{ padding: '14px 16px', fontWeight: 600, color: '#f5e6c8' }}>
+                        <td style={{ padding: '14px 16px', fontWeight: 600, color: '#2c1810' }}>
                           {r.userName}
                         </td>
 
                         {/* Contact */}
-                        <td style={{ padding: '14px 16px', color: '#c8a96e', fontSize: 12 }}>
+                        <td style={{ padding: '14px 16px', color: '#7c6a59', fontSize: 12 }}>
                           {r.userEmail || '—'}
                         </td>
 
@@ -1586,9 +1596,9 @@ export default function Admin() {
                               display: 'inline-block',
                               padding: '2px 8px',
                               borderRadius: 12,
-                              background: '#33230f',
-                              border: '1px solid #57411a',
-                              color: '#d4af37',
+                              background: '#faf6ee',
+                              border: '1px solid #dfcfb3',
+                              color: '#8c6721',
                               fontWeight: 700,
                               fontSize: 12,
                             }}
@@ -1598,15 +1608,15 @@ export default function Admin() {
                         </td>
 
                         {/* Meal */}
-                        <td style={{ padding: '14px 16px', color: '#e2d5b5' }}>
+                        <td style={{ padding: '14px 16px', color: '#2c1810' }}>
                           <span
                             style={{
                               fontSize: 11,
                               padding: '3px 8px',
                               borderRadius: 4,
-                              background: '#1c2818',
-                              color: '#86efac',
-                              border: '1px solid #22c55e44',
+                              background: '#f0fdf4',
+                              color: '#15803d',
+                              border: '1px solid #bbf7d0',
                             }}
                           >
                             {r.mealPreference || 'Vegetarian'}
@@ -1630,7 +1640,7 @@ export default function Admin() {
                         </td>
 
                         {/* Date */}
-                        <td style={{ padding: '14px 16px', color: '#9a804e', fontSize: 11, whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '14px 16px', color: '#7c6a59', fontSize: 11, whiteSpace: 'nowrap' }}>
                           {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
                         </td>
 
@@ -1639,11 +1649,11 @@ export default function Admin() {
                           <button
                             onClick={() => handleDeleteRsvp(r.id, r.userName)}
                             style={{
-                              background: '#3b1a1a',
-                              border: '1px solid #7f1d1d',
+                              background: '#fef2f2',
+                              border: '1px solid #fca5a5',
                               borderRadius: 6,
                               padding: '4px 8px',
-                              color: '#fca5a5',
+                              color: '#b91c1c',
                               cursor: 'pointer',
                               fontSize: 11,
                             }}
@@ -1669,8 +1679,9 @@ export default function Admin() {
             {/* Add New Gift Form */}
             <div
               style={{
-                background: '#261a09',
-                border: '1px solid #3d2e0e',
+                background: '#ffffff',
+                border: '1px solid #ebdcc5',
+                boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                 borderRadius: 12,
                 padding: '20px 22px',
               }}
@@ -1699,11 +1710,11 @@ export default function Admin() {
                     required
                     style={{
                       width: '100%',
-                      background: '#1a1209',
-                      border: '1px solid #3d2e0e',
+                      background: '#fdfbf7',
+                      border: '1px solid #dfcfb3',
                       borderRadius: 8,
                       padding: '10px 12px',
-                      color: '#f5e6c8',
+                      color: '#2c1810',
                       fontSize: 13,
                       fontFamily: 'serif',
                       boxSizing: 'border-box',
@@ -1730,9 +1741,9 @@ export default function Admin() {
                       type="button"
                       onClick={() => giftFileInputRef.current?.click()}
                       style={{
-                        background: '#33230f',
-                        border: '1px solid #d4af37',
-                        color: '#d4af37',
+                        background: '#faf6ee',
+                        border: '1px solid #b8860b',
+                        color: '#8c6721',
                         borderRadius: 8,
                         padding: '10px 14px',
                         fontSize: 12,
@@ -1788,11 +1799,11 @@ export default function Admin() {
                     onChange={e => setNewGift({ ...newGift, description: e.target.value })}
                     style={{
                       width: '100%',
-                      background: '#1a1209',
-                      border: '1px solid #3d2e0e',
+                      background: '#fdfbf7',
+                      border: '1px solid #dfcfb3',
                       borderRadius: 8,
                       padding: '10px 12px',
-                      color: '#f5e6c8',
+                      color: '#2c1810',
                       fontSize: 13,
                       fontFamily: 'serif',
                       resize: 'none',
@@ -1806,8 +1817,8 @@ export default function Admin() {
                     type="submit"
                     disabled={savingGift}
                     style={{
-                      background: '#d4af37',
-                      color: '#1a1209',
+                      background: '#b8860b',
+                      color: '#ffffff',
                       border: 'none',
                       borderRadius: 8,
                       padding: '10px 20px',
@@ -1828,15 +1839,16 @@ export default function Admin() {
             {/* Gifts List Table */}
             <div
               style={{
-                background: '#261a09',
-                border: '1px solid #3d2e0e',
+                background: '#ffffff',
+                border: '1px solid #ebdcc5',
+                boxShadow: '0 2px 10px rgba(184, 134, 11, 0.05)',
                 borderRadius: 12,
                 overflowX: 'auto',
               }}
             >
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13, fontFamily: 'serif' }}>
                 <thead>
-                  <tr style={{ background: '#1e1408', borderBottom: '1px solid #3d2e0e', color: '#9a804e', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
+                  <tr style={{ background: '#f8f3e8', borderBottom: '1px solid #ebdcc5', color: '#7c6a59', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
                     <th style={{ padding: '14px 16px' }}>Photo</th>
                     <th style={{ padding: '14px 16px' }}>Gift Name</th>
                     <th style={{ padding: '14px 16px' }}>Status</th>
@@ -1847,7 +1859,7 @@ export default function Admin() {
                 <tbody>
                   {gifts.length === 0 ? (
                     <tr>
-                      <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#9a804e' }}>
+                      <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#7c6a59' }}>
                         {loadingGifts ? 'Loading gift registry…' : 'No gifts in registry.'}
                       </td>
                     </tr>
@@ -1855,7 +1867,7 @@ export default function Admin() {
                     gifts.map((g) => {
                       const isReserved = g.status === 'Reserved';
                       return (
-                        <tr key={g.id} style={{ borderBottom: '1px solid #33230f' }}>
+                        <tr key={g.id} style={{ borderBottom: '1px solid #f0e6d6' }}>
                           <td style={{ padding: '12px 16px' }}>
                             <img
                               src={g.image}
@@ -1863,7 +1875,7 @@ export default function Admin() {
                               style={{ width: 52, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #3d2e0e' }}
                             />
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: 600, color: '#f5e6c8' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: 600, color: '#2c1810' }}>
                             {g.name}
                           </td>
                           <td style={{ padding: '12px 16px' }}>
@@ -1878,16 +1890,16 @@ export default function Admin() {
                                 fontWeight: 700,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.08em',
-                                background: isReserved ? '#3b1a1a' : '#166534',
-                                color: isReserved ? '#fca5a5' : '#86efac',
-                                border: `1px solid ${isReserved ? '#7f1d1d' : '#22c55e'}`,
+                                background: isReserved ? '#fef2f2' : '#f0fdf4',
+                                color: isReserved ? '#991b1b' : '#15803d',
+                                border: `1px solid ${isReserved ? '#fecaca' : '#bbf7d0'}`,
                               }}
                             >
                               {isReserved ? <Lock size={10} /> : <Sparkles size={10} />}
                               <span>{isReserved ? 'Reserved' : 'Available'}</span>
                             </span>
                           </td>
-                          <td style={{ padding: '12px 16px', color: '#c8a96e' }}>
+                          <td style={{ padding: '12px 16px', color: '#7c6a59' }}>
                             {g.reservedByName || '—'}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'right' }}>
@@ -1896,11 +1908,11 @@ export default function Admin() {
                                 <button
                                   onClick={() => handleUnreserveGift(g.id, g.name)}
                                   style={{
-                                    background: '#33230f',
-                                    border: '1px solid #57411a',
+                                    background: '#faf6ee',
+                                    border: '1px solid #dfcfb3',
                                     borderRadius: 6,
                                     padding: '4px 10px',
-                                    color: '#d4af37',
+                                    color: '#8c6721',
                                     cursor: 'pointer',
                                     fontSize: 11,
                                     fontFamily: 'serif',
@@ -2060,7 +2072,7 @@ export default function Admin() {
           </div>
         )}
 
-        <p style={{ color: '#7a6030', fontSize: 11, textAlign: 'center', marginTop: 36, fontFamily: 'serif' }}>
+        <p style={{ color: '#7c6a59', fontSize: 11, textAlign: 'center', marginTop: 36, fontFamily: 'serif' }}>
           Admin Panel · Komal &amp; Tushar Wedding · {new Date().getFullYear()}
         </p>
       </div>
