@@ -949,6 +949,9 @@ export default function Admin() {
   const [loadingGifts, setLoadingGifts] = useState(false);
   const [newGift, setNewGift] = useState({ name: '', price: '', description: '', image: '' });
   const [savingGift, setSavingGift] = useState(false);
+  const [giftImageFile, setGiftImageFile] = useState(null);
+  const [giftImagePreview, setGiftImagePreview] = useState('');
+  const giftFileInputRef = useRef(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -1063,8 +1066,36 @@ export default function Admin() {
     if (!newGift.name.trim()) return;
     try {
       setSavingGift(true);
-      await api.adminAddGift(newGift);
+      let imageUrl = newGift.image?.trim();
+
+      // If user selected a file to upload directly to Supabase storage
+      if (giftImageFile) {
+        if (!supabase) {
+          throw new Error('Supabase not configured for file upload');
+        }
+        const ext = giftImageFile.name.split('.').pop() || 'jpg';
+        const fileName = `gifts/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const { error: uploadErr } = await supabase.storage
+          .from('wedding-photos')
+          .upload(fileName, giftImageFile, { contentType: giftImageFile.type, upsert: true });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: urlData } = supabase.storage
+          .from('wedding-photos')
+          .getPublicUrl(fileName);
+        imageUrl = urlData?.publicUrl || imageUrl;
+      }
+
+      await api.adminAddGift({
+        ...newGift,
+        image: imageUrl || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80'
+      });
+
       setNewGift({ name: '', price: '', description: '', image: '' });
+      setGiftImageFile(null);
+      setGiftImagePreview('');
+      if (giftFileInputRef.current) giftFileInputRef.current.value = '';
       await loadGifts();
     } catch (err) {
       alert(err.message || 'Failed to add gift');
@@ -1681,23 +1712,72 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <input
-                    type="text"
-                    placeholder="Image URL (Unsplash or direct image link)"
-                    value={newGift.image}
-                    onChange={e => setNewGift({ ...newGift, image: e.target.value })}
-                    style={{
-                      width: '100%',
-                      background: '#1a1209',
-                      border: '1px solid #3d2e0e',
-                      borderRadius: 8,
-                      padding: '10px 12px',
-                      color: '#f5e6c8',
-                      fontSize: 13,
-                      fontFamily: 'serif',
-                      boxSizing: 'border-box',
-                    }}
-                  />
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <input
+                      type="file"
+                      ref={giftFileInputRef}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setGiftImageFile(file);
+                          setGiftImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => giftFileInputRef.current?.click()}
+                      style={{
+                        background: '#33230f',
+                        border: '1px solid #d4af37',
+                        color: '#d4af37',
+                        borderRadius: 8,
+                        padding: '10px 14px',
+                        fontSize: 12,
+                        cursor: 'pointer',
+                        fontFamily: 'serif',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      📁 Upload Photo
+                    </button>
+                    <input
+                      type="text"
+                      placeholder="or paste Image URL"
+                      value={newGift.image}
+                      onChange={e => setNewGift({ ...newGift, image: e.target.value })}
+                      style={{
+                        width: '100%',
+                        background: '#1a1209',
+                        border: '1px solid #3d2e0e',
+                        borderRadius: 8,
+                        padding: '10px 12px',
+                        color: '#f5e6c8',
+                        fontSize: 13,
+                        fontFamily: 'serif',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                  {giftImagePreview && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                      <img src={giftImagePreview} alt="Preview" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #d4af37' }} />
+                      <span style={{ fontSize: 11, color: '#86efac' }}>Selected: {giftImageFile?.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setGiftImageFile(null);
+                          setGiftImagePreview('');
+                          if (giftFileInputRef.current) giftFileInputRef.current.value = '';
+                        }}
+                        style={{ background: 'transparent', border: 'none', color: '#f87171', fontSize: 12, cursor: 'pointer' }}
+                      >
+                        ✕ Remove
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
