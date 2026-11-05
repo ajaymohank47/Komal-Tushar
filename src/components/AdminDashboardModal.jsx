@@ -140,19 +140,45 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
         <div className="p-6 overflow-y-auto flex-grow">
           {activeTab === 'rsvps' && (
             <div className="space-y-6">
-              {/* Header with refresh */}
+              {/* Header with refresh and export */}
               <div className="flex items-center justify-between">
                 <h4 className="font-serif text-sm uppercase tracking-widest text-gold-400 font-semibold">
                   RSVP Submissions
                 </h4>
-                <button
-                  onClick={loadAdminData}
-                  disabled={loading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider transition-all disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-                  <span>{loading ? 'Loading…' : 'Refresh'}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (!rsvpData.rsvps.length) return alert('No RSVPs to export.');
+                      const headers = ['Guest Name', 'Contact', 'Guests Count', 'Meal Preference', 'Message', 'Submitted At'];
+                      const rows = rsvData.rsvps.map(r => [
+                        `"${(r.userName || '').replace(/"/g, '""')}"`,
+                        `"${(r.userEmail || '').replace(/"/g, '""')}"`,
+                        r.guestCount || 1,
+                        `"${(r.mealPreference || '').replace(/"/g, '""')}"`,
+                        `"${(r.message || '').replace(/"/g, '""')}"`,
+                        `"${r.submittedAt ? new Date(r.submittedAt).toLocaleString('en-IN') : ''}"`
+                      ]);
+                      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+                      const link = document.createElement('a');
+                      link.setAttribute('href', encodeURI(csvContent));
+                      link.setAttribute('download', `rsvps_${new Date().toISOString().slice(0, 10)}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs font-serif uppercase tracking-wider transition-all"
+                  >
+                    <span>Export CSV</span>
+                  </button>
+                  <button
+                    onClick={loadAdminData}
+                    disabled={loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-wider transition-all disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                    <span>{loading ? 'Loading…' : 'Refresh'}</span>
+                  </button>
+                </div>
               </div>
               {/* Summary Cards */}
               {rsvpData.summary && (
@@ -179,12 +205,13 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       <th className="p-3.5">Meal</th>
                       <th className="p-3.5">Message</th>
                       <th className="p-3.5">Date</th>
+                      <th className="p-3.5 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gold-500/10">
                     {rsvpData.rsvps.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="p-8 text-center text-stone-500">
+                        <td colSpan="7" className="p-8 text-center text-stone-500">
                           No RSVP submissions received yet.
                         </td>
                       </tr>
@@ -202,6 +229,30 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                           <td className="p-3.5 max-w-xs truncate text-stone-300 italic">{r.message || '-'}</td>
                           <td className="p-3.5 text-stone-500 text-[10px]">
                             {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}
+                          </td>
+                          <td className="p-3.5 text-right">
+                            <button
+                              onClick={async () => {
+                                if (!window.confirm(`Delete RSVP for ${r.userName}?`)) return;
+                                try {
+                                  await api.adminDeleteRsvp(r.id);
+                                  setRsvpData(prev => ({
+                                    ...prev,
+                                    rsvps: prev.rsvps.filter(item => item.id !== r.id),
+                                    summary: prev.summary ? {
+                                      ...prev.summary,
+                                      totalResponses: Math.max(0, prev.summary.totalResponses - 1)
+                                    } : null
+                                  }));
+                                } catch (e) {
+                                  alert(e.message || 'Failed to delete');
+                                }
+                              }}
+                              className="p-1 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded transition-all"
+                              title="Delete RSVP"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </td>
                         </tr>
                       ))

@@ -1,6 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useImageContext } from '../contexts/ImageContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { api } from '../services/api';
+import { 
+  Users, Gift, Image, RefreshCw, Trash2, Plus, 
+  Search, Download, CheckCircle2, Lock, Sparkles, MessageSquare, Utensils 
+} from 'lucide-react';
 
 // Fallback images
 import storyImg1 from '../assets/images/story/story-1.svg';
@@ -23,7 +28,7 @@ import tejasImg from '../assets/images/family/tejas.jpg';
 import sayaliImg from '../assets/images/family/sayali.jpg';
 import shashikantImg from '../assets/images/family/shashikant.jpg';
 import sushmaImg from '../assets/images/family/sushma.jpg';
-import sarveshImg from '../assets/images/family/sarvesh.jpg';
+import sarveshImg from '../assets/images/family/sarvesh.png';
 import akshatatImg from '../assets/images/family/Akshatat.jpg';
 import heroImg from '../assets/images/hero.png';
 
@@ -930,6 +935,21 @@ export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false);
   const [authError, setAuthError] = useState(false);
 
+  // Tabs: 'rsvps' | 'gifts' | 'photos'
+  const [activeTab, setActiveTab] = useState('rsvps');
+
+  // RSVPs state
+  const [rsvps, setRsvps] = useState([]);
+  const [rsvpSummary, setRsvpSummary] = useState(null);
+  const [loadingRsvps, setLoadingRsvps] = useState(false);
+  const [rsvpSearch, setRsvpSearch] = useState('');
+
+  // Gifts state
+  const [gifts, setGifts] = useState([]);
+  const [loadingGifts, setLoadingGifts] = useState(false);
+  const [newGift, setNewGift] = useState({ name: '', price: '', description: '', image: '' });
+  const [savingGift, setSavingGift] = useState(false);
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
@@ -939,6 +959,149 @@ export default function Admin() {
       setAuthError(true);
     }
   };
+
+  // Fetch RSVPs
+  const loadRsvps = async () => {
+    try {
+      setLoadingRsvps(true);
+      const res = await api.adminGetRsvps();
+      setRsvps(res.rsvps || []);
+      setRsvpSummary(res.summary || null);
+    } catch (err) {
+      console.error('Failed to load RSVPs', err);
+    } finally {
+      setLoadingRsvps(false);
+    }
+  };
+
+  // Fetch Gifts
+  const loadGifts = async () => {
+    try {
+      setLoadingGifts(true);
+      const res = await api.getGifts();
+      setGifts(res || []);
+    } catch (err) {
+      console.error('Failed to load gifts', err);
+    } finally {
+      setLoadingGifts(false);
+    }
+  };
+
+  // When authenticated, load data and subscribe to real-time events
+  useEffect(() => {
+    if (!authenticated) return;
+
+    loadRsvps();
+    loadGifts();
+
+    if (!supabase) return;
+
+    // Realtime listener for RSVPs
+    const rsvpChannel = supabase
+      .channel('admin_rsvps_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wedding_rsvps' }, () => {
+        loadRsvps();
+      })
+      .subscribe();
+
+    // Realtime listener for Gifts
+    const giftsChannel = supabase
+      .channel('admin_gifts_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wedding_gifts' }, () => {
+        loadGifts();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rsvpChannel);
+      supabase.removeChannel(giftsChannel);
+    };
+  }, [authenticated]);
+
+  const handleDeleteRsvp = async (id, name) => {
+    if (!window.confirm(`Delete RSVP for "${name || 'this guest'}"?`)) return;
+    try {
+      await api.adminDeleteRsvp(id);
+      setRsvps(prev => prev.filter(r => r.id !== id));
+      if (rsvpSummary) {
+        setRsvpSummary(prev => ({
+          ...prev,
+          totalResponses: Math.max(0, prev.totalResponses - 1)
+        }));
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to delete RSVP');
+    }
+  };
+
+  const handleExportCsv = () => {
+    if (!rsvps.length) {
+      alert('No RSVP data to export.');
+      return;
+    }
+    const headers = ['Guest Name', 'Contact', 'Guests Count', 'Meal Preference', 'Message', 'Submitted At'];
+    const rows = rsvps.map(r => [
+      `"${(r.userName || '').replace(/"/g, '""')}"`,
+      `"${(r.userEmail || '').replace(/"/g, '""')}"`,
+      r.guestCount || 1,
+      `"${(r.mealPreference || '').replace(/"/g, '""')}"`,
+      `"${(r.message || '').replace(/"/g, '""')}"`,
+      `"${r.submittedAt ? new Date(r.submittedAt).toLocaleString('en-IN') : ''}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `komal_tushar_rsvps_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleAddGift = async (e) => {
+    e.preventDefault();
+    if (!newGift.name.trim()) return;
+    try {
+      setSavingGift(true);
+      await api.adminAddGift(newGift);
+      setNewGift({ name: '', price: '', description: '', image: '' });
+      await loadGifts();
+    } catch (err) {
+      alert(err.message || 'Failed to add gift');
+    } finally {
+      setSavingGift(false);
+    }
+  };
+
+  const handleDeleteGift = async (id, name) => {
+    if (!window.confirm(`Delete "${name}" from registry?`)) return;
+    try {
+      await api.adminDeleteGift(id);
+      setGifts(prev => prev.filter(g => g.id !== id));
+    } catch (err) {
+      alert(err.message || 'Failed to delete gift');
+    }
+  };
+
+  const handleUnreserveGift = async (id, name) => {
+    if (!window.confirm(`Cancel reservation for "${name}"?`)) return;
+    try {
+      await api.unreserveGift(id);
+      await loadGifts();
+    } catch (err) {
+      alert(err.message || 'Failed to cancel reservation');
+    }
+  };
+
+  const filteredRsvps = rsvps.filter(r => {
+    if (!rsvpSearch.trim()) return true;
+    const term = rsvpSearch.toLowerCase();
+    return (
+      (r.userName || '').toLowerCase().includes(term) ||
+      (r.userEmail || '').toLowerCase().includes(term) ||
+      (r.message || '').toLowerCase().includes(term)
+    );
+  });
 
   const pageStyle = {
     minHeight: '100vh',
@@ -1040,22 +1203,23 @@ export default function Admin() {
       <div
         style={{
           borderBottom: '1px solid #3d2e0e',
-          padding: '20px 24px',
+          padding: '16px 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
           background: '#1a1209',
-          zIndex: 10,
+          zIndex: 20,
         }}
       >
         <div>
-          <h1 style={{ ...headingStyle, fontSize: 20 }}>✦ Photo &amp; Image Admin</h1>
+          <h1 style={{ ...headingStyle, fontSize: 20 }}>✦ Wedding Administration</h1>
           <p style={{ color: '#7a6030', fontSize: 11, margin: '2px 0 0', fontFamily: 'serif' }}>
             Komal &amp; Tushar · Live Supabase Cloud Sync
           </p>
         </div>
+
         <button
           onClick={() => window.location.href = '/'}
           style={{
@@ -1074,125 +1238,749 @@ export default function Admin() {
         </button>
       </div>
 
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 20px 0' }}>
-
-        {/* How-to banner */}
-        <div
+      {/* Tab Navigation */}
+      <div
+        style={{
+          borderBottom: '1px solid #3d2e0e',
+          background: '#20160a',
+          padding: '0 24px',
+          display: 'flex',
+          gap: 12,
+          position: 'sticky',
+          top: 65,
+          zIndex: 19,
+        }}
+      >
+        <button
+          onClick={() => setActiveTab('rsvps')}
           style={{
-            background: '#261a09',
-            border: '1px solid #3d2e0e',
-            borderRadius: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
             padding: '14px 18px',
-            marginBottom: 32,
-            fontSize: 13,
-            lineHeight: 1.7,
-            color: '#c8a96e',
-            fontFamily: 'serif',
+            background: 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'rsvps' ? '2px solid #d4af37' : '2px solid transparent',
+            color: activeTab === 'rsvps' ? '#d4af37' : '#8c7647',
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
           }}
         >
-          <strong style={{ color: '#d4af37', display: 'block', marginBottom: 4, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: 12 }}>
-            How to use
-          </strong>
-          Customize hero, story, family, and gallery photos. In the <strong>Photo Gallery</strong> section below, you can also <strong>add brand new photos</strong> with a category filter (Pre-wedding, Engagement, Family, Travel, etc.). All changes sync with Supabase Storage and Database in real-time!
-          {!isSupabaseConfigured && (
-            <span
+          <Users size={16} />
+          <span>Guest RSVPs ({rsvps.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('gifts')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '14px 18px',
+            background: 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'gifts' ? '2px solid #d4af37' : '2px solid transparent',
+            color: activeTab === 'gifts' ? '#d4af37' : '#8c7647',
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          <Gift size={16} />
+          <span>Gift Registry ({gifts.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('photos')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '14px 18px',
+            background: 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'photos' ? '2px solid #d4af37' : '2px solid transparent',
+            color: activeTab === 'photos' ? '#d4af37' : '#8c7647',
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          <Image size={16} />
+          <span>Photos &amp; Gallery</span>
+        </button>
+      </div>
+
+      <div style={{ maxWidth: 1040, margin: '0 auto', padding: '28px 20px 0' }}>
+
+        {/* ════════════════════════════════════════════════════════════════
+            TAB 1: RSVPS
+        ════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'rsvps' && (
+          <div>
+            {/* Summary Cards */}
+            <div
               style={{
-                display: 'block',
-                marginTop: 10,
-                padding: '8px 12px',
-                background: '#3b1a1a',
-                border: '1px solid #7f1d1d',
-                borderRadius: 6,
-                color: '#fca5a5',
-                fontSize: 12,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: 16,
+                marginBottom: 24,
               }}
             >
-              ⚠ <strong>Supabase not configured.</strong> Create a <code>.env</code> file with
-              <code> VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>.
-            </span>
-          )}
-        </div>
+              <div
+                style={{
+                  background: '#261a09',
+                  border: '1px solid #3d2e0e',
+                  borderRadius: 12,
+                  padding: '18px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                  Total Responses
+                </span>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#d4af37', display: 'block', marginTop: 4 }}>
+                  {rsvps.length}
+                </span>
+              </div>
 
-        {/* Sections */}
-        {IMAGE_SLOTS.map(section => (
-          <div key={section.section} style={{ marginBottom: 44 }}>
-            <h2
+              <div
+                style={{
+                  background: '#261a09',
+                  border: '1px solid #3d2e0e',
+                  borderRadius: 12,
+                  padding: '18px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                  Total Guests Attending
+                </span>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#86efac', display: 'block', marginTop: 4 }}>
+                  {rsvps.reduce((sum, r) => sum + (parseInt(r.guestCount, 10) || 1), 0)}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  background: '#261a09',
+                  border: '1px solid #3d2e0e',
+                  borderRadius: 12,
+                  padding: '18px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                  Vegetarian Meals
+                </span>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#fde047', display: 'block', marginTop: 4 }}>
+                  {rsvps.filter(r => (r.mealPreference || '').toLowerCase().includes('veg')).length}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  background: '#261a09',
+                  border: '1px solid #3d2e0e',
+                  borderRadius: 12,
+                  padding: '18px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9a804e', display: 'block' }}>
+                  Blessings &amp; Notes
+                </span>
+                <span style={{ fontFamily: 'serif', fontSize: 32, fontWeight: 700, color: '#cbd5e1', display: 'block', marginTop: 4 }}>
+                  {rsvps.filter(r => Boolean(r.message && r.message.trim())).length}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Bar: Search, Refresh, Export */}
+            <div
               style={{
-                ...headingStyle,
-                fontSize: 16,
-                marginBottom: 16,
-                paddingBottom: 8,
-                borderBottom: '1px solid #3d2e0e',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 12,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: '#261a09',
+                border: '1px solid #3d2e0e',
+                borderRadius: 12,
+                padding: '14px 18px',
+                marginBottom: 20,
               }}
             >
-              {section.section}
-            </h2>
+              {/* Search */}
+              <div style={{ position: 'relative', flex: '1 1 260px' }}>
+                <Search size={15} style={{ position: 'absolute', left: 12, top: 11, color: '#9a804e' }} />
+                <input
+                  type="text"
+                  placeholder="Search by name, contact, or note..."
+                  value={rsvpSearch}
+                  onChange={e => setRsvpSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: '#1a1209',
+                    border: '1px solid #3d2e0e',
+                    borderRadius: 8,
+                    padding: '8px 12px 8px 36px',
+                    color: '#f5e6c8',
+                    fontSize: 13,
+                    fontFamily: 'serif',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
-            {/* If section is Photo Gallery: show the Add Photo form and extra photos */}
-            {section.section === 'Photo Gallery' && (
-              <>
-                <AddGalleryPhotoForm />
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <button
+                  onClick={loadRsvps}
+                  disabled={loadingRsvps}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#33230f',
+                    border: '1px solid #57411a',
+                    borderRadius: 8,
+                    padding: '8px 14px',
+                    color: '#d4af37',
+                    fontSize: 12,
+                    fontFamily: 'serif',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <RefreshCw size={13} className={loadingRsvps ? 'animate-spin' : ''} />
+                  <span>{loadingRsvps ? 'Refreshing…' : 'Refresh'}</span>
+                </button>
 
-                {/* Additional custom photos list */}
-                {galleryPhotos.length > 0 && (
-                  <div style={{ marginBottom: 24 }}>
+                <button
+                  onClick={handleExportCsv}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#166534',
+                    border: '1px solid #22c55e',
+                    borderRadius: 8,
+                    padding: '8px 14px',
+                    color: '#86efac',
+                    fontSize: 12,
+                    fontFamily: 'serif',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Download size={13} />
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
+
+            {/* RSVP Table */}
+            <div
+              style={{
+                background: '#261a09',
+                border: '1px solid #3d2e0e',
+                borderRadius: 12,
+                overflowX: 'auto',
+              }}
+            >
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13, fontFamily: 'serif' }}>
+                <thead>
+                  <tr style={{ background: '#1e1408', borderBottom: '1px solid #3d2e0e', color: '#9a804e', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
+                    <th style={{ padding: '14px 16px' }}>Guest Name</th>
+                    <th style={{ padding: '14px 16px' }}>Contact</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'center' }}>Guests</th>
+                    <th style={{ padding: '14px 16px' }}>Meal Choice</th>
+                    <th style={{ padding: '14px 16px' }}>Wishes / Note</th>
+                    <th style={{ padding: '14px 16px' }}>Date</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRsvps.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', color: '#9a804e' }}>
+                        {loadingRsvps
+                          ? 'Loading RSVPs from Supabase…'
+                          : rsvpSearch
+                          ? `No RSVPs matching "${rsvpSearch}".`
+                          : 'No RSVP responses received yet. Once guests submit the RSVP form on the site, their entries will show here in real-time!'}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredRsvps.map((r) => (
+                      <tr
+                        key={r.id}
+                        style={{
+                          borderBottom: '1px solid #33230f',
+                          transition: 'background 0.2s',
+                        }}
+                      >
+                        {/* Name */}
+                        <td style={{ padding: '14px 16px', fontWeight: 600, color: '#f5e6c8' }}>
+                          {r.userName}
+                        </td>
+
+                        {/* Contact */}
+                        <td style={{ padding: '14px 16px', color: '#c8a96e', fontSize: 12 }}>
+                          {r.userEmail || '—'}
+                        </td>
+
+                        {/* Guest Count */}
+                        <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              background: '#33230f',
+                              border: '1px solid #57411a',
+                              color: '#d4af37',
+                              fontWeight: 700,
+                              fontSize: 12,
+                            }}
+                          >
+                            {r.guestCount || 1}
+                          </span>
+                        </td>
+
+                        {/* Meal */}
+                        <td style={{ padding: '14px 16px', color: '#e2d5b5' }}>
+                          <span
+                            style={{
+                              fontSize: 11,
+                              padding: '3px 8px',
+                              borderRadius: 4,
+                              background: '#1c2818',
+                              color: '#86efac',
+                              border: '1px solid #22c55e44',
+                            }}
+                          >
+                            {r.mealPreference || 'Vegetarian'}
+                          </span>
+                        </td>
+
+                        {/* Message */}
+                        <td
+                          style={{
+                            padding: '14px 16px',
+                            color: '#c8a96e',
+                            fontStyle: 'italic',
+                            maxWidth: 240,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                          title={r.message}
+                        >
+                          {r.message ? `"${r.message}"` : '—'}
+                        </td>
+
+                        {/* Date */}
+                        <td style={{ padding: '14px 16px', color: '#9a804e', fontSize: 11, whiteSpace: 'nowrap' }}>
+                          {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
+                        </td>
+
+                        {/* Action */}
+                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                          <button
+                            onClick={() => handleDeleteRsvp(r.id, r.userName)}
+                            style={{
+                              background: '#3b1a1a',
+                              border: '1px solid #7f1d1d',
+                              borderRadius: 6,
+                              padding: '4px 8px',
+                              color: '#fca5a5',
+                              cursor: 'pointer',
+                              fontSize: 11,
+                            }}
+                            title="Delete RSVP"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════
+            TAB 2: GIFT REGISTRY
+        ════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'gifts' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Add New Gift Form */}
+            <div
+              style={{
+                background: '#261a09',
+                border: '1px solid #3d2e0e',
+                borderRadius: 12,
+                padding: '20px 22px',
+              }}
+            >
+              <h3
+                style={{
+                  ...headingStyle,
+                  fontSize: 14,
+                  marginBottom: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <Plus size={15} />
+                <span>Add New Item to Gift Registry</span>
+              </h3>
+
+              <form onSubmit={handleAddGift} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Gift Name (e.g. Solara Air Fryer)"
+                    value={newGift.name}
+                    onChange={e => setNewGift({ ...newGift, name: e.target.value })}
+                    required
+                    style={{
+                      width: '100%',
+                      background: '#1a1209',
+                      border: '1px solid #3d2e0e',
+                      borderRadius: 8,
+                      padding: '10px 12px',
+                      color: '#f5e6c8',
+                      fontSize: 13,
+                      fontFamily: 'serif',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Image URL (Unsplash or direct image link)"
+                    value={newGift.image}
+                    onChange={e => setNewGift({ ...newGift, image: e.target.value })}
+                    style={{
+                      width: '100%',
+                      background: '#1a1209',
+                      border: '1px solid #3d2e0e',
+                      borderRadius: 8,
+                      padding: '10px 12px',
+                      color: '#f5e6c8',
+                      fontSize: 13,
+                      fontFamily: 'serif',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <textarea
+                    rows={2}
+                    placeholder="Description"
+                    value={newGift.description}
+                    onChange={e => setNewGift({ ...newGift, description: e.target.value })}
+                    style={{
+                      width: '100%',
+                      background: '#1a1209',
+                      border: '1px solid #3d2e0e',
+                      borderRadius: 8,
+                      padding: '10px 12px',
+                      color: '#f5e6c8',
+                      fontSize: 13,
+                      fontFamily: 'serif',
+                      resize: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    type="submit"
+                    disabled={savingGift}
+                    style={{
+                      background: '#d4af37',
+                      color: '#1a1209',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '10px 20px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      fontFamily: "'Cormorant Garamond', serif",
+                    }}
+                  >
+                    {savingGift ? 'Adding…' : 'Add to Registry'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Gifts List Table */}
+            <div
+              style={{
+                background: '#261a09',
+                border: '1px solid #3d2e0e',
+                borderRadius: 12,
+                overflowX: 'auto',
+              }}
+            >
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13, fontFamily: 'serif' }}>
+                <thead>
+                  <tr style={{ background: '#1e1408', borderBottom: '1px solid #3d2e0e', color: '#9a804e', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.1em' }}>
+                    <th style={{ padding: '14px 16px' }}>Photo</th>
+                    <th style={{ padding: '14px 16px' }}>Gift Name</th>
+                    <th style={{ padding: '14px 16px' }}>Status</th>
+                    <th style={{ padding: '14px 16px' }}>Reserved By</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gifts.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#9a804e' }}>
+                        {loadingGifts ? 'Loading gift registry…' : 'No gifts in registry.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    gifts.map((g) => {
+                      const isReserved = g.status === 'Reserved';
+                      return (
+                        <tr key={g.id} style={{ borderBottom: '1px solid #33230f' }}>
+                          <td style={{ padding: '12px 16px' }}>
+                            <img
+                              src={g.image}
+                              alt={g.name}
+                              style={{ width: 52, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #3d2e0e' }}
+                            />
+                          </td>
+                          <td style={{ padding: '12px 16px', fontWeight: 600, color: '#f5e6c8' }}>
+                            {g.name}
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                padding: '3px 8px',
+                                borderRadius: 4,
+                                fontSize: 10,
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.08em',
+                                background: isReserved ? '#3b1a1a' : '#166534',
+                                color: isReserved ? '#fca5a5' : '#86efac',
+                                border: `1px solid ${isReserved ? '#7f1d1d' : '#22c55e'}`,
+                              }}
+                            >
+                              {isReserved ? <Lock size={10} /> : <Sparkles size={10} />}
+                              <span>{isReserved ? 'Reserved' : 'Available'}</span>
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 16px', color: '#c8a96e' }}>
+                            {g.reservedByName || '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 8 }}>
+                              {isReserved && (
+                                <button
+                                  onClick={() => handleUnreserveGift(g.id, g.name)}
+                                  style={{
+                                    background: '#33230f',
+                                    border: '1px solid #57411a',
+                                    borderRadius: 6,
+                                    padding: '4px 10px',
+                                    color: '#d4af37',
+                                    cursor: 'pointer',
+                                    fontSize: 11,
+                                    fontFamily: 'serif',
+                                  }}
+                                  title="Clear Reservation"
+                                >
+                                  Unreserve
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleDeleteGift(g.id, g.name)}
+                                style={{
+                                  background: '#3b1a1a',
+                                  border: '1px solid #7f1d1d',
+                                  borderRadius: 6,
+                                  padding: '4px 8px',
+                                  color: '#fca5a5',
+                                  cursor: 'pointer',
+                                  fontSize: 11,
+                                }}
+                                title="Delete Gift"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════
+            TAB 3: PHOTO CUSTOMIZATION
+        ════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'photos' && (
+          <div>
+            {/* How-to banner */}
+            <div
+              style={{
+                background: '#261a09',
+                border: '1px solid #3d2e0e',
+                borderRadius: 10,
+                padding: '14px 18px',
+                marginBottom: 32,
+                fontSize: 13,
+                lineHeight: 1.7,
+                color: '#c8a96e',
+                fontFamily: 'serif',
+              }}
+            >
+              <strong style={{ color: '#d4af37', display: 'block', marginBottom: 4, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: 12 }}>
+                How to use
+              </strong>
+              Customize hero, story, family, and gallery photos. In the <strong>Photo Gallery</strong> section below, you can also <strong>add brand new photos</strong> with a category filter (Pre-wedding, Engagement, Family, Travel, etc.). All changes sync with Supabase Storage and Database in real-time!
+              {!isSupabaseConfigured && (
+                <span
+                  style={{
+                    display: 'block',
+                    marginTop: 10,
+                    padding: '8px 12px',
+                    background: '#3b1a1a',
+                    border: '1px solid #7f1d1d',
+                    borderRadius: 6,
+                    color: '#fca5a5',
+                    fontSize: 12,
+                  }}
+                >
+                  ⚠ <strong>Supabase not configured.</strong> Create a <code>.env</code> file with
+                  <code> VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>.
+                </span>
+              )}
+            </div>
+
+            {/* Sections */}
+            {IMAGE_SLOTS.map(section => (
+              <div key={section.section} style={{ marginBottom: 44 }}>
+                <h2
+                  style={{
+                    ...headingStyle,
+                    fontSize: 16,
+                    marginBottom: 16,
+                    paddingBottom: 8,
+                    borderBottom: '1px solid #3d2e0e',
+                  }}
+                >
+                  {section.section}
+                </h2>
+
+                {/* If section is Photo Gallery: show the Add Photo form and extra photos */}
+                {section.section === 'Photo Gallery' && (
+                  <>
+                    <AddGalleryPhotoForm />
+
+                    {/* Additional custom photos list */}
+                    {galleryPhotos.length > 0 && (
+                      <div style={{ marginBottom: 24 }}>
+                        <h3
+                          style={{
+                            fontFamily: "'Cormorant Garamond', serif",
+                            color: '#d4af37',
+                            fontSize: 14,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            marginBottom: 12,
+                          }}
+                        >
+                          ✦ Extra Added Moments ({galleryPhotos.length})
+                        </h3>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                            gap: 16,
+                            marginBottom: 24,
+                          }}
+                        >
+                          {galleryPhotos.map((photo) => (
+                            <AddedGalleryPhotoCard key={photo.id} photo={photo} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <h3
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        color: '#d4af37',
-                        fontSize: 14,
+                        color: '#a08552',
+                        fontSize: 13,
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
                         marginBottom: 12,
                       }}
                     >
-                      ✦ Extra Added Moments ({galleryPhotos.length})
+                      Default Gallery Slots (1–9)
                     </h3>
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                        gap: 16,
-                        marginBottom: 24,
-                      }}
-                    >
-                      {galleryPhotos.map((photo) => (
-                        <AddedGalleryPhotoCard key={photo.id} photo={photo} />
-                      ))}
-                    </div>
-                  </div>
+                  </>
                 )}
 
-                <h3
+                <div
                   style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    color: '#a08552',
-                    fontSize: 13,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    marginBottom: 12,
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                    gap: 16,
                   }}
                 >
-                  Default Gallery Slots (1–9)
-                </h3>
-              </>
-            )}
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: 16,
-              }}
-            >
-              {section.slots.map(slot => (
-                <SlotCard key={slot.id} slot={slot} />
-              ))}
-            </div>
+                  {section.slots.map(slot => (
+                    <SlotCard key={slot.id} slot={slot} />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
 
-        <p style={{ color: '#7a6030', fontSize: 11, textAlign: 'center', marginTop: 20, fontFamily: 'serif' }}>
+        <p style={{ color: '#7a6030', fontSize: 11, textAlign: 'center', marginTop: 36, fontFamily: 'serif' }}>
           Admin Panel · Komal &amp; Tushar Wedding · {new Date().getFullYear()}
         </p>
       </div>

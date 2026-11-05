@@ -475,6 +475,20 @@ export const api = {
     };
   },
 
+  async adminDeleteRsvp(id) {
+    if (supabase) {
+      try {
+        await supabase.from('wedding_rsvps').delete().eq('id', id);
+      } catch (e) {
+        console.error('Supabase adminDeleteRsvp error:', e);
+      }
+    }
+    const rsvps = getStored(STORAGE_KEYS.RSVPS, []);
+    const filtered = rsvps.filter(r => r.id !== id);
+    setStored(STORAGE_KEYS.RSVPS, filtered);
+    return { success: true };
+  },
+
   async adminAddGift(newGift) {
     const id = `gift_${Date.now()}`;
     const gift = {

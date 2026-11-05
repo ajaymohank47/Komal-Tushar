@@ -5,7 +5,7 @@
 import heroImg from '../assets/images/hero.png';
 import akshatatImg from '../assets/images/family/Akshatat.jpg';
 import geetaImg from '../assets/images/family/geeta.jpg';
-import sarveshImg from '../assets/images/family/sarvesh.jpg';
+import sarveshImg from '../assets/images/family/sarvesh.png';
 import sayaliImg from '../assets/images/family/sayali.jpg';
 import shashikantImg from '../assets/images/family/shashikant.jpg';
 import sushmaImg from '../assets/images/family/sushma.jpg';
@@ -56,6 +56,7 @@ export const weddingContent = {
     { label: "Gallery", href: "#gallery" },
     { label: "Venue", href: "#venue" },
     { label: "RSVP", href: "#rsvp" },
+    { label: "Reserve Gift", href: "#registry" },
   ],
 
   // Footer Navigation Links
@@ -66,7 +67,8 @@ export const weddingContent = {
     { label: "Gallery", href: "#gallery" },
     { label: "Venue", href: "#venue" },
     { label: "RSVP", href: "#rsvp" },
-    { label: "Gifts", href: "#gifts" },
+    { label: "Reserve Gift", href: "#registry" },
+    { label: "Gifts (UPI / Bank)", href: "#gifts" },
   ],
 
   // 1. Hero Section
