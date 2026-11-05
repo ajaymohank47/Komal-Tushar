@@ -44,11 +44,21 @@ export const IMAGE_SLOTS = [
   {
     section: 'Our Story',
     slots: [
-      { id: 'story-1', label: '1. First Meeting (2020)', fallback: storyImg1 },
-      { id: 'story-2', label: '2. First Date (2021)', fallback: storyImg2 },
-      { id: 'story-3', label: '3. The Proposal (2024)', fallback: storyImg3 },
-      { id: 'story-4', label: '4. Engagement (2025)', fallback: storyImg4 },
-      { id: 'story-5', label: '5. Wedding Day (2026)', fallback: storyImg5 },
+      { id: 'story-1-1', label: '1. First Meeting · Photo A', fallback: storyImg1 },
+      { id: 'story-1-2', label: '1. First Meeting · Photo B', fallback: storyImg1 },
+      { id: 'story-1-3', label: '1. First Meeting · Photo C', fallback: storyImg1 },
+      { id: 'story-2-1', label: '2. First Date · Photo A', fallback: storyImg2 },
+      { id: 'story-2-2', label: '2. First Date · Photo B', fallback: storyImg2 },
+      { id: 'story-2-3', label: '2. First Date · Photo C', fallback: storyImg2 },
+      { id: 'story-3-1', label: '3. The Proposal · Photo A', fallback: storyImg3 },
+      { id: 'story-3-2', label: '3. The Proposal · Photo B', fallback: storyImg3 },
+      { id: 'story-3-3', label: '3. The Proposal · Photo C', fallback: storyImg3 },
+      { id: 'story-4-1', label: '4. Engagement · Photo A', fallback: storyImg4 },
+      { id: 'story-4-2', label: '4. Engagement · Photo B', fallback: storyImg4 },
+      { id: 'story-4-3', label: '4. Engagement · Photo C', fallback: storyImg4 },
+      { id: 'story-5-1', label: '5. Wedding Day · Photo A', fallback: storyImg5 },
+      { id: 'story-5-2', label: '5. Wedding Day · Photo B', fallback: storyImg5 },
+      { id: 'story-5-3', label: '5. Wedding Day · Photo C', fallback: storyImg5 },
     ],
   },
   {
@@ -429,7 +439,7 @@ export function AddGalleryPhotoForm() {
   const { addGalleryPhoto } = useImageContext();
   const fileInputRef = useRef(null);
 
-  const [title, setTitle] = useState('');
+  // title is derived from category — no user input needed
   const [category, setCategory] = useState('prewedding');
   const [customCategory, setCustomCategory] = useState('');
   const [isUrlMode, setIsUrlMode] = useState(false);
@@ -512,13 +522,12 @@ export function AddGalleryPhotoForm() {
       }
 
       await addGalleryPhoto({
-        title: title.trim() || 'Our Moment',
+        title: 'Our Moment',
         category: finalCategory.toLowerCase(),
         imageUrl: finalUrl,
       });
 
       setStatus('success');
-      setTitle('');
       setImageUrl('');
       setSelectedFile(null);
       setPreviewSrc('');
@@ -568,42 +577,6 @@ export function AddGalleryPhotoForm() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
-          {/* Photo Title */}
-          <div>
-            <label
-              style={{
-                display: 'block',
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 12,
-                color: '#8c6721',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: 6,
-                fontWeight: 600,
-              }}
-            >
-              Photo Caption / Title
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Sunset in Udaipur, Haldi Fun..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#fdfbf7',
-                border: '1px solid #dfcfb3',
-                borderRadius: 8,
-                padding: '9px 12px',
-                color: '#2c1810',
-                fontSize: 13,
-                outline: 'none',
-                boxSizing: 'border-box',
-                fontFamily: 'serif',
-              }}
-            />
-          </div>
-
           {/* Category Filter Selector */}
           <div>
             <label

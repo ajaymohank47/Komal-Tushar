@@ -3,10 +3,56 @@ import { motion } from 'framer-motion';
 import { weddingContent } from '../data/content';
 import { useImage } from '../hooks/useImage';
 
-function StoryItem({ item, index }) {
-  const slotId = `story-${index + 1}`;
-  const imageSrc = useImage(slotId, item.image);
+/** Floating polaroid-style collage of 3 images for a story item */
+function StoryCollage({ index }) {
+  const i = index + 1;
+  const img1 = useImage(`story-${i}-1`, null);
+  const img2 = useImage(`story-${i}-2`, null);
+  const img3 = useImage(`story-${i}-3`, null);
 
+  // Only render if at least one image is available
+  if (!img1 && !img2 && !img3) return null;
+
+  const photos = [img1, img2, img3].filter(Boolean);
+
+  // Three slightly rotated polaroid cards
+  const rotations = ['-rotate-3', 'rotate-2', '-rotate-1'];
+  const offsets = [
+    'translate-x-0 translate-y-0',
+    'translate-x-3 translate-y-4',
+    'translate-x-1 translate-y-8',
+  ];
+
+  return (
+    <div className="flex-shrink-0 relative w-28 sm:w-36" style={{ height: 160 }}>
+      {photos.map((src, pi) => (
+        <div
+          key={pi}
+          className={`absolute bg-white shadow-md border border-gold-300/40 rounded-sm overflow-hidden
+            ${rotations[pi] || ''} ${offsets[pi] || ''}
+            transition-transform duration-300 hover:scale-105 hover:z-10`}
+          style={{
+            width: pi === 0 ? 90 : pi === 1 ? 78 : 70,
+            top: pi === 0 ? 0 : pi === 1 ? 18 : 36,
+            left: pi === 0 ? 0 : pi === 1 ? 14 : 28,
+            zIndex: photos.length - pi,
+            padding: 4,
+          }}
+        >
+          <img
+            src={src}
+            alt={`memory ${pi + 1}`}
+            className="w-full object-cover object-top"
+            style={{ aspectRatio: '3/4' }}
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StoryItem({ item, index }) {
   return (
     <motion.div
       key={item.year}
@@ -26,7 +72,7 @@ function StoryItem({ item, index }) {
         {item.year}
       </span>
 
-      {/* Row: text + photo side by side */}
+      {/* Row: text + collage side by side */}
       <div className="flex gap-5 items-start">
         {/* Left: text */}
         <div className="flex-1 min-w-0">
@@ -38,17 +84,8 @@ function StoryItem({ item, index }) {
           </p>
         </div>
 
-        {/* Right: photo card */}
-        {item.image && (
-          <div className="flex-shrink-0 w-28 sm:w-36 rounded-2xl overflow-hidden border border-gold-400/25 shadow-md bg-white">
-            <img
-              src={imageSrc}
-              alt={item.title}
-              className="w-full aspect-[3/4] object-cover object-top hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        )}
+        {/* Right: floating collage (only if images uploaded) */}
+        <StoryCollage index={index} />
       </div>
     </motion.div>
   );

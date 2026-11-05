@@ -29,17 +29,10 @@ function GalleryPhoto({ photo, index, onClick }) {
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading="lazy"
       />
-      {/* Hover overlay with Category Tag & Title */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
-        <span className="inline-block px-2.5 py-0.5 rounded-full bg-gold-500/80 text-white font-serif text-[10px] uppercase tracking-widest w-max mb-1">
-          {photo.category}
-        </span>
-        <h4 className="font-cormorant text-lg font-medium">
-          {photo.title}
-        </h4>
-        <div className="flex items-center gap-1.5 text-xs text-gold-300 mt-1">
-          <Eye className="w-3.5 h-3.5" />
-          <span className="text-[11px] font-light">View photo</span>
+      {/* Hover overlay — eye icon only */}
+      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <div className="flex items-center gap-1.5 text-white">
+          <Eye className="w-5 h-5" />
         </div>
       </div>
     </motion.div>
@@ -237,12 +230,6 @@ export default function Gallery() {
               photo={filteredPhotos[lightboxIndex]}
             />
             <div className="mt-4 text-center">
-              <span className="inline-block px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 text-xs font-serif uppercase tracking-widest mb-1">
-                {filteredPhotos[lightboxIndex].category}
-              </span>
-              <h3 className="font-cormorant text-xl text-stone-100 font-medium">
-                {filteredPhotos[lightboxIndex].title}
-              </h3>
               <p className="text-xs text-stone-400">
                 {lightboxIndex + 1} of {filteredPhotos.length}
               </p>
