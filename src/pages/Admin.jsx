@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useImageContext } from '../contexts/ImageContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { api } from '../services/api';
+import { compressImage, formatFileSize } from '../utils/imageCompressor';
 import { 
   Users, Gift, Image, RefreshCw, Trash2, Plus, 
   Search, Download, CheckCircle2, Lock, Sparkles, MessageSquare, Utensils 
@@ -90,7 +91,9 @@ export function SlotCard({ slot }) {
   const { images, setImage, removeImage } = useImageContext();
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState('');
   const [status, setStatus] = useState(null); // null | 'success' | 'error'
+  const [compressionNote, setCompressionNote] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlValue, setUrlValue] = useState('');
@@ -109,7 +112,9 @@ export function SlotCard({ slot }) {
     }
 
     setUploading(true);
+    setUploadMsg('Optimizing photo…');
     setStatus(null);
+    setCompressionNote('');
     setErrorMsg('');
 
     try {
@@ -117,13 +122,17 @@ export function SlotCard({ slot }) {
         throw new Error('Please select an image file (JPEG, PNG, WEBP, etc.)');
       }
 
-      const ext = file.name.split('.').pop() || 'jpg';
+      // Automatically compress file size while preserving high visual resolution & clarity
+      const { file: fileToUpload, originalSize, compressedSize, reduction, wasCompressed } = await compressImage(file);
+
+      setUploadMsg('Uploading…');
+      const ext = fileToUpload.name.split('.').pop() || 'jpg';
       const cleanSlotId = slot.id.replace(/[^a-zA-Z0-9_-]/g, '_');
       const path = `${cleanSlotId}/${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from('wedding-photos')
-        .upload(path, file, { 
+        .upload(path, fileToUpload, { 
           cacheControl: '3600',
           upsert: true 
         });
@@ -139,13 +148,20 @@ export function SlotCard({ slot }) {
 
       await setImage(slot.id, publicUrl);
       setStatus('success');
-      setTimeout(() => setStatus(null), 3000);
+      if (wasCompressed) {
+        setCompressionNote(`⚡ Reduced ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${reduction} saved)`);
+      }
+      setTimeout(() => {
+        setStatus(null);
+        setCompressionNote('');
+      }, 4000);
     } catch (err) {
       console.error('Upload failed', err);
       setStatus('error');
       setErrorMsg(err?.message || 'Upload failed. Check Supabase connection.');
     } finally {
       setUploading(false);
+      setUploadMsg('');
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -322,8 +338,14 @@ export function SlotCard({ slot }) {
             width: '100%',
           }}
         >
-          {uploading ? 'Uploading…' : isCustomized ? '↩ Replace Photo' : '↑ Upload Photo'}
+          {uploading ? (uploadMsg || 'Uploading…') : isCustomized ? '↩ Replace Photo' : '↑ Upload Photo'}
         </button>
+
+        {compressionNote && (
+          <p style={{ color: '#047857', fontSize: 10, margin: '2px 0 0', fontFamily: 'serif', textAlign: 'center' }}>
+            {compressionNote}
+          </p>
+        )}
 
         {/* Alternate actions: Reset or URL paste */}
         <div style={{ display: 'flex', gap: 6 }}>
@@ -509,6 +531,7 @@ export function AddGalleryPhotoForm() {
   const [imageUrl, setImageUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewSrc, setPreviewSrc] = useState('');
+  const [compressionInfo, setCompressionInfo] = useState('');
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -521,16 +544,22 @@ export function AddGalleryPhotoForm() {
     { id: 'custom', label: '+ Other Category' },
   ];
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       setErrorMsg('Please choose an image file (JPG, PNG, WEBP, etc.)');
       return;
     }
-    setSelectedFile(file);
-    setPreviewSrc(URL.createObjectURL(file));
     setErrorMsg('');
+    const { file: optimized, originalSize, compressedSize, reduction, wasCompressed } = await compressImage(file);
+    setSelectedFile(optimized);
+    setPreviewSrc(URL.createObjectURL(optimized));
+    if (wasCompressed) {
+      setCompressionInfo(`⚡ Auto-compressed: ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${reduction} smaller, full clarity preserved)`);
+    } else {
+      setCompressionInfo('');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -594,6 +623,7 @@ export function AddGalleryPhotoForm() {
       setImageUrl('');
       setSelectedFile(null);
       setPreviewSrc('');
+      setCompressionInfo('');
       setCustomCategory('');
       if (fileInputRef.current) fileInputRef.current.value = '';
       setTimeout(() => setStatus(null), 3500);
@@ -762,41 +792,48 @@ export function AddGalleryPhotoForm() {
 
         {/* Upload File Input / URL Input */}
         {!isUrlMode ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              style={{
-                background: '#faf6ee',
-                border: '1px dashed #b8860b',
-                borderRadius: 8,
-                padding: '12px 18px',
-                color: '#8c6721',
-                fontSize: 13,
-                fontFamily: 'serif',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <span>📁 {selectedFile ? `Selected: ${selectedFile.name}` : 'Click to Pick Image from Computer / Phone'}</span>
-            </button>
-            {previewSrc && (
-              <img
-                src={previewSrc}
-                alt="Preview"
-                style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover', border: '1px solid #d4af37' }}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                style={{
+                  background: '#faf6ee',
+                  border: '1px dashed #b8860b',
+                  borderRadius: 8,
+                  padding: '12px 18px',
+                  color: '#8c6721',
+                  fontSize: 13,
+                  fontFamily: 'serif',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <span>📁 {selectedFile ? `Selected: ${selectedFile.name}` : 'Click to Pick Image from Computer / Phone'}</span>
+              </button>
+              {previewSrc && (
+                <img
+                  src={previewSrc}
+                  alt="Preview"
+                  style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover', border: '1px solid #d4af37' }}
+                />
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileSelect}
               />
+            </div>
+            {compressionInfo && (
+              <p style={{ color: '#047857', fontSize: 11, margin: '8px 0 0', fontFamily: 'serif' }}>
+                {compressionInfo}
+              </p>
             )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleFileSelect}
-            />
           </div>
         ) : (
           <div>
@@ -989,6 +1026,7 @@ export default function Admin() {
   const [savingGift, setSavingGift] = useState(false);
   const [giftImageFile, setGiftImageFile] = useState(null);
   const [giftImagePreview, setGiftImagePreview] = useState('');
+  const [giftCompressionInfo, setGiftCompressionInfo] = useState('');
   const giftFileInputRef = useRef(null);
 
   const handleLogin = (e) => {
@@ -1133,6 +1171,7 @@ export default function Admin() {
       setNewGift({ name: '', price: '', description: '', image: '' });
       setGiftImageFile(null);
       setGiftImagePreview('');
+      setGiftCompressionInfo('');
       if (giftFileInputRef.current) giftFileInputRef.current.value = '';
       await loadGifts();
     } catch (err) {
@@ -1765,11 +1804,17 @@ export default function Admin() {
                       ref={giftFileInputRef}
                       accept="image/*"
                       style={{ display: 'none' }}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          setGiftImageFile(file);
-                          setGiftImagePreview(URL.createObjectURL(file));
+                          const { file: optimized, originalSize, compressedSize, reduction, wasCompressed } = await compressImage(file);
+                          setGiftImageFile(optimized);
+                          setGiftImagePreview(URL.createObjectURL(optimized));
+                          if (wasCompressed) {
+                            setGiftCompressionInfo(`⚡ Reduced ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${reduction} saved)`);
+                          } else {
+                            setGiftCompressionInfo('');
+                          }
                         }
                       }}
                     />
@@ -1809,14 +1854,17 @@ export default function Admin() {
                     />
                   </div>
                   {giftImagePreview && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                       <img src={giftImagePreview} alt="Preview" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #d4af37' }} />
-                      <span style={{ fontSize: 11, color: '#86efac' }}>Selected: {giftImageFile?.name}</span>
+                      <span style={{ fontSize: 11, color: '#047857', fontFamily: 'serif' }}>
+                        Selected: {giftImageFile?.name} {giftCompressionInfo && `(${giftCompressionInfo})`}
+                      </span>
                       <button
                         type="button"
                         onClick={() => {
                           setGiftImageFile(null);
                           setGiftImagePreview('');
+                          setGiftCompressionInfo('');
                           if (giftFileInputRef.current) giftFileInputRef.current.value = '';
                         }}
                         style={{ background: 'transparent', border: 'none', color: '#f87171', fontSize: 12, cursor: 'pointer' }}
