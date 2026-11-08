@@ -279,7 +279,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       value={newGift.name}
                       onChange={e => setNewGift({ ...newGift, name: e.target.value })}
                       required
-                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-[#2c1810] placeholder-stone-500"
                     />
                   </div>
                   <div>
@@ -289,7 +289,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       value={newGift.price}
                       onChange={e => setNewGift({ ...newGift, price: e.target.value })}
                       required
-                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-[#2c1810] placeholder-stone-500"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -298,7 +298,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       placeholder="Image URL (Unsplash or direct image link)"
                       value={newGift.image}
                       onChange={e => setNewGift({ ...newGift, image: e.target.value })}
-                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-[#2c1810] placeholder-stone-500"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -307,7 +307,7 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       placeholder="Description"
                       value={newGift.description}
                       onChange={e => setNewGift({ ...newGift, description: e.target.value })}
-                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-stone-100 placeholder-stone-500 resize-none"
+                      className="w-full p-2.5 rounded-lg bg-[#f8f3e8] border border-gold-400/25 text-[#2c1810] placeholder-stone-500 resize-none"
                     ></textarea>
                   </div>
                   <div className="sm:col-span-2 flex justify-end">

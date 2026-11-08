@@ -294,52 +294,51 @@ export default function Registry() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-lg bg-[#140c06] text-stone-100 rounded-3xl border border-gold-400/40 p-6 sm:p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-white text-espresso-text rounded-3xl border border-gold-400/40 p-6 sm:p-8 shadow-2xl overflow-hidden"
             >
               {/* Close Button */}
               <button
                 onClick={closeReserveModal}
                 disabled={submitting}
-                className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-espresso-text hover:bg-gold-50 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* Modal Header */}
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-400 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gold-50 border border-gold-400/40 flex items-center justify-center text-gold-600 flex-shrink-0">
                   <Gift className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-cormorant text-2xl font-bold gold-gradient-text uppercase">
+                  <h3 className="font-cormorant text-2xl font-medium text-espresso-text uppercase">
                     Reserve Wedding Gift
                   </h3>
-                  <p className="text-xs text-stone-400 font-serif">
+                  <p className="text-xs text-espresso-muted font-serif">
                     Komal &amp; Tushar · December 13, 2026
                   </p>
                 </div>
               </div>
 
               {/* Selected Gift Preview */}
-              <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-black/50 border border-gold-400/20 mb-6">
+              <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-[#faf6ee] border border-gold-400/30 mb-6">
                 <img
                   src={modalGift.image}
                   alt={modalGift.name}
                   className="w-16 h-16 rounded-xl object-cover border border-gold-400/30 flex-shrink-0"
                 />
                 <div>
-                  <h4 className="font-cormorant text-lg font-medium text-stone-200 leading-tight">
+                  <h4 className="font-cormorant text-lg font-medium text-espresso-text leading-tight">
                     {modalGift.name}
                   </h4>
-
                 </div>
               </div>
 
               {/* Form */}
               <form onSubmit={handleConfirmReservation} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-widest text-gold-300 font-semibold mb-1.5">
-                    Your Full Name <span className="text-red-400">*</span>
+                  <label className="block text-xs font-serif uppercase tracking-widest text-gold-800 font-semibold mb-1.5">
+                    Your Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -348,12 +347,13 @@ export default function Registry() {
                     placeholder="e.g. Priya &amp; Rahul Sharma"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-obsidian-950 border border-gold-500/30 text-stone-100 text-sm focus:border-gold-400 focus:outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#faf6ee] border border-gold-400/50 text-[#2c1810] placeholder-stone-400 text-sm focus:border-gold-500 focus:bg-white focus:outline-none transition-colors"
+                    style={{ color: '#2c1810', backgroundColor: '#faf6ee' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-serif uppercase tracking-widest text-gold-300 font-semibold mb-1.5">
+                  <label className="block text-xs font-serif uppercase tracking-widest text-gold-800 font-semibold mb-1.5">
                     Blessing / Warm Note (Optional)
                   </label>
                   <textarea
@@ -361,11 +361,12 @@ export default function Registry() {
                     placeholder="Wishing you both a lifetime of happiness..."
                     value={guestNote}
                     onChange={(e) => setGuestNote(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-obsidian-950 border border-gold-500/30 text-stone-100 text-xs focus:border-gold-400 focus:outline-none resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#faf6ee] border border-gold-400/50 text-[#2c1810] placeholder-stone-400 text-xs focus:border-gold-500 focus:bg-white focus:outline-none resize-none transition-colors"
+                    style={{ color: '#2c1810', backgroundColor: '#faf6ee' }}
                   />
                 </div>
 
-                <div className="p-3 rounded-xl bg-gold-500/10 border border-gold-500/20 text-[11px] text-gold-200/90 leading-relaxed">
+                <div className="p-3 rounded-xl bg-gold-50 border border-gold-400/30 text-[11px] text-gold-900 leading-relaxed">
                   ✦ <strong>Note:</strong> Once confirmed, this gift will be permanently marked as <strong>Reserved</strong> under your name so no one else can reserve it.
                 </div>
 
@@ -374,14 +375,14 @@ export default function Registry() {
                     type="button"
                     onClick={closeReserveModal}
                     disabled={submitting}
-                    className="flex-1 py-2.5 rounded-xl border border-stone-700 hover:border-stone-500 text-stone-300 font-serif text-xs uppercase tracking-wider transition-colors"
+                    className="flex-1 py-2.5 rounded-xl border border-gold-400/40 hover:bg-gold-50 text-espresso-muted hover:text-espresso-text font-serif text-xs uppercase tracking-wider transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || !guestName.trim()}
-                    className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-600 disabled:bg-stone-800 disabled:text-stone-500 text-white font-serif text-xs uppercase tracking-widest font-semibold shadow-md transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-600 disabled:opacity-50 text-white font-serif text-xs uppercase tracking-widest font-semibold shadow-md transition-all flex items-center justify-center gap-1.5"
                   >
                     {submitting ? (
                       <span>Reserving…</span>

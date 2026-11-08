@@ -1797,11 +1797,11 @@ export default function Admin() {
                       onChange={e => setNewGift({ ...newGift, image: e.target.value })}
                       style={{
                         width: '100%',
-                        background: '#1a1209',
-                        border: '1px solid #3d2e0e',
+                        background: '#fdfbf7',
+                        border: '1px solid #dfcfb3',
                         borderRadius: 8,
                         padding: '10px 12px',
-                        color: '#f5e6c8',
+                        color: '#2c1810',
                         fontSize: 13,
                         fontFamily: 'serif',
                         boxSizing: 'border-box',
