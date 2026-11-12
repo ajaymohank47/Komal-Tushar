@@ -1651,11 +1651,12 @@ export default function Admin() {
                         key={r.id}
                         style={{
                           borderBottom: '1px solid #f0e6d6',
+                          verticalAlign: 'top',
                           transition: 'background 0.2s',
                         }}
                       >
                         {/* Name */}
-                        <td style={{ padding: '14px 16px', fontWeight: 600, color: '#2c1810' }}>
+                        <td style={{ padding: '14px 16px', fontWeight: 600, color: '#2c1810', whiteSpace: 'nowrap' }}>
                           {r.userName}
                         </td>
 
@@ -1683,7 +1684,7 @@ export default function Admin() {
                         </td>
 
                         {/* Meal */}
-                        <td style={{ padding: '14px 16px', color: '#2c1810' }}>
+                        <td style={{ padding: '14px 16px', color: '#2c1810', whiteSpace: 'nowrap' }}>
                           <span
                             style={{
                               fontSize: 11,
@@ -1698,20 +1699,27 @@ export default function Admin() {
                           </span>
                         </td>
 
-                        {/* Message */}
+                        {/* Message / Wishes */}
                         <td
                           style={{
                             padding: '14px 16px',
-                            color: '#c8a96e',
+                            color: '#2c1810',
                             fontStyle: 'italic',
-                            maxWidth: 240,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
+                            minWidth: 260,
+                            maxWidth: 420,
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-word',
+                            lineHeight: 1.55,
+                            fontSize: 13,
                           }}
-                          title={r.message}
                         >
-                          {r.message ? `"${r.message}"` : '—'}
+                          {r.message ? (
+                            <span style={{ display: 'block' }}>
+                              "{r.message}"
+                            </span>
+                          ) : (
+                            <span style={{ color: '#a89a8c', fontStyle: 'normal' }}>—</span>
+                          )}
                         </td>
 
                         {/* Date */}

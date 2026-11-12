@@ -217,17 +217,19 @@ export default function AdminDashboardModal({ isOpen, onClose }) {
                       </tr>
                     ) : (
                       rsvpData.rsvps.map((r) => (
-                        <tr key={r.id} className="hover:bg-gold-500/5">
+                        <tr key={r.id} className="hover:bg-gold-500/5 align-top">
                           <td className="p-3.5">
-                            <span className="font-semibold text-[#2c1810] block">{r.userName}</span>
+                            <span className="font-semibold text-[#2c1810] block whitespace-nowrap">{r.userName}</span>
                           </td>
                           <td className="p-3.5">
                             <span className="text-[10px] text-[#7c6a59]">{r.userEmail || '-'}</span>
                           </td>
-                          <td className="p-3.5 font-medium text-[#8c6721]">{r.guestCount || 1}</td>
-                          <td className="p-3.5 text-[#4a3525]">{r.mealPreference || '-'}</td>
-                          <td className="p-3.5 max-w-xs truncate text-[#4a3525] italic">{r.message || '-'}</td>
-                          <td className="p-3.5 text-stone-500 text-[10px]">
+                          <td className="p-3.5 font-medium text-[#8c6721] text-center">{r.guestCount || 1}</td>
+                          <td className="p-3.5 text-[#4a3525] whitespace-nowrap">{r.mealPreference || '-'}</td>
+                          <td className="p-3.5 min-w-[240px] max-w-md text-[#2c1810] italic whitespace-normal break-words leading-relaxed text-xs">
+                            {r.message ? `"${r.message}"` : '-'}
+                          </td>
+                          <td className="p-3.5 text-stone-500 text-[10px] whitespace-nowrap">
                             {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}
                           </td>
                           <td className="p-3.5 text-right">
